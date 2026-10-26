@@ -1,0 +1,30 @@
+#!/bin/sh
+# Pre-commit: Pint (backend) + ESLint/Prettier (frontend) pada file yang di-stage.
+# Aktifkan sekali per clone:  git config core.hooksPath .githooks
+# Larastan sengaja tidak dijalankan di sini (lambat); dijalankan di CI (SETUP-004).
+
+set -e
+
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
+
+# --- Backend: Pint ---
+PHP_FILES=$(git diff --cached --name-only --diff-filter=ACM -- 'backend/*.php' | sed 's|^backend/||')
+if [ -n "$PHP_FILES" ]; then
+  echo "[pre-commit] Pint..."
+  (cd backend && php vendor/bin/pint --test $PHP_FILES)
+fi
+
+# --- Frontend: ESLint dan Prettier ---
+FE_LINT=$(git diff --cached --name-only --diff-filter=ACM -- 'frontend/*.vue' 'frontend/*.ts' 'frontend/*.mts' 'frontend/*.js' | sed 's|^frontend/||')
+FE_FORMAT=$(git diff --cached --name-only --diff-filter=ACM -- 'frontend/*.vue' 'frontend/*.ts' 'frontend/*.mts' 'frontend/*.js' 'frontend/*.css' | sed 's|^frontend/||')
+
+if [ -n "$FE_LINT" ]; then
+  echo "[pre-commit] ESLint..."
+  (cd frontend && npx eslint --no-warn-ignored $FE_LINT)
+fi
+
+if [ -n "$FE_FORMAT" ]; then
+  echo "[pre-commit] Prettier..."
+  (cd frontend && npx prettier --check $FE_FORMAT)
+fi
