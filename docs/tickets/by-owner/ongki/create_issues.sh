@@ -77,7 +77,7 @@ AuditLogger::log(action, resource, before, after, reason) dipanggil setelah comm
 
 **Acceptance Criteria**
 - [ ] Pemanggilan di dalam transaksi baru tertulis setelah commit (afterCommit)
-- [ ] Payload memuat before/after JSON, user, outlet, IP
+- [ ] Payload memuat before/after JSON, user, outlet, IP, action (dari katalog SRS FR-AUD-001), reason
 
 **Depends on:** DB-AUD-001, SETUP-005
 **References:** FR-AUD-001
@@ -98,7 +98,7 @@ gh issue create --title '[BE-AUTH-001] POST /auth/register-business (business + 
 POST /auth/register-business (business + outlet + Owner + seed role, satu transaksi). Rujukan: FR-AUTH-001; UC-AUTH-01; SEQ-AUTH-01.
 
 **Acceptance Criteria**
-- [ ] Data valid mengembalikan 201 dan membuat business, outlet, Owner, user_outlets
+- [ ] Data valid mengembalikan 201 dan membuat business, outlet, Owner, user_outlets; audit `BUSINESS_REGISTERED`
 - [ ] Email ganda dan password lemah mengembalikan 422 dengan pesan SRS FR-AUTH-001
 
 **Depends on:** DB-TEN-002, DB-RBAC-001, BE-AUD-001
@@ -120,7 +120,7 @@ gh issue create --title '[BE-AUTH-002] Login/logout Sanctum SPA, throttle, locko
 Login/logout Sanctum SPA, throttle, lockout 5×/15 menit, audit LOGIN dan LOGIN_FAILED. Rujukan: FR-AUTH-002; UC-AUTH-02; BR-023.
 
 **Acceptance Criteria**
-- [ ] Gagal ke-5 mengunci akun 15 menit (423 ACCOUNT_LOCKED)
+- [ ] Gagal ke-5 mengunci akun 15 menit (423 ACCOUNT_LOCKED); audit `LOGIN`/`LOGIN_FAILED`
 - [ ] Akun INACTIVE 403; login gagal email tak dikenal tercatat dengan user_id NULL
 
 **Depends on:** BE-AUTH-001
@@ -274,7 +274,7 @@ gh issue create --title '[BE-PAY-002] POST /orders/{id}/pay: Idempotency-Key, lo
 POST /orders/{id}/pay: Idempotency-Key, lock order, PAID→COMPLETED atomik. Rujukan: FR-PAY-001; UC-PAY-01; SEQ-PAY-01.
 
 **Acceptance Criteria**
-- [ ] Key sama untuk order sama = 200 + Idempotent-Replay; untuk order lain 409
+- [ ] Key sama untuk order sama = 200 + Idempotent-Replay; untuk order lain 409; audit `PAYMENT_CREATED` after-commit
 - [ ] Order bukan PENDING_PAYMENT 409; header kosong 422
 
 **Depends on:** BE-PAY-001, BE-ORD-005
@@ -329,7 +329,7 @@ gh issue create --title '[BE-ORD-004] Diskon order-level (persen/nominal), batas
 Diskon order-level (persen/nominal), batas Cashier per outlet, audit. Rujukan: FR-ORD-003; UC-ORD-02.
 
 **Acceptance Criteria**
-- [ ] Diskon > subtotal 422 DISCOUNT_INVALID
+- [ ] Diskon > subtotal 422 DISCOUNT_INVALID; audit `DISCOUNT_APPLIED`
 - [ ] Cashier melebihi batas outlet 403 DISCOUNT_LIMIT_EXCEEDED
 
 **Depends on:** BE-ORD-003
@@ -340,7 +340,7 @@ gh issue create --title '[BE-ORD-006] Cancel order (DRAFT/PENDING, alasan wajib,
 Cancel order (DRAFT/PENDING, alasan wajib, aturan Cashier limited, audit). Rujukan: FR-ORD-005; UC-ORD-03; BR-025.
 
 **Acceptance Criteria**
-- [ ] Order sudah dibayar 409 "harus melalui refund"
+- [ ] Order sudah dibayar 409 "harus melalui refund"; audit `ORDER_CANCELLED`
 - [ ] Cashier membatalkan order orang lain 403
 
 **Depends on:** BE-ORD-005, BE-AUD-001
@@ -373,7 +373,7 @@ gh issue create --title '[BE-PAY-005] Refund penuh: permission, alasan, kas ke s
 Refund penuh: permission, alasan, kas ke shift OPEN pelaku, restock opsional, audit. Rujukan: FR-RFD-001; UC-RFD-01; SEQ-RFD-01.
 
 **Acceptance Criteria**
-- [ ] Refund tunai tanpa shift OPEN pelaku 409 NO_OPEN_SHIFT; QRIS shift_id NULL
+- [ ] Refund tunai tanpa shift OPEN pelaku 409 NO_OPEN_SHIFT; QRIS shift_id NULL; audit `REFUND_CREATED`
 - [ ] Refund kedua 409 ORDER_ALREADY_REFUNDED
 
 **Depends on:** BE-PAY-002, BE-AUD-001, BE-ENG-004

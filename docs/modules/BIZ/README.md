@@ -138,7 +138,7 @@ Detail AC lengkap ada di `tickets/tickets.md` (ID sama).
 
 - **BE-USER-002** 
   - [ ] Manager hanya boleh ubah pajak, service, struk; rounding_increment hanya Owner
-  - [ ] Kode outlet tidak bisa diubah setelah ada order; perubahan setting tercatat audit before/after
+  - [ ] Kode outlet tidak bisa diubah setelah ada order; audit `SETTING_CHANGED` before/after per field
 - **BE-USER-003** 
   - [ ] Hanya Owner yang dapat mengubah; perubahan tercatat audit
   - [ ] license_plan dan license_valid_until tersimpan tanpa memblokir fitur

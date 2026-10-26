@@ -388,7 +388,7 @@ Detail AC lengkap ada di `tickets/tickets.md` (ID sama).
   - [ ] Produk tanpa recipe dilewati
 - **BE-ENG-002** 
   - [ ] Dua order paralel dengan bahan sama tidak deadlock dan stok benar
-  - [ ] Movement SALE unit_cost memakai last_cost saat kejadian
+  - [ ] Movement SALE unit_cost memakai biaya dari snapshot order (BR-051), bukan last_cost saat bayar
 - **BE-ENG-003** 
   - [ ] allow_negative_stock = true: bayar sukses dan stock_shortage terisi
   - [ ] false: 422 INSUFFICIENT_STOCK dengan details.ingredients
@@ -405,14 +405,14 @@ Detail AC lengkap ada di `tickets/tickets.md` (ID sama).
   - [ ] Pemanggilan ulang dengan referensi sama mengembalikan movement lama tanpa baris baru
   - [ ] reverse() membuat movement lawan dengan referensi baru
 - **BE-INV-003** 
-  - [ ] Satu batch menghasilkan satu movement OPENING per bahan dengan reference_id = id batch
+  - [ ] Satu batch menghasilkan satu movement OPENING per bahan dengan reference_id = id batch; audit `OPENING_STOCK`
   - [ ] Qty ≤ 0 dan bahan ganda dalam batch ditolak
 - **BE-INV-004** 
-  - [ ] Alasan wajib dan qty > 0; before/after tersimpan
+  - [ ] Alasan wajib dan qty > 0; before/after tersimpan; audit `STOCK_ADJUSTMENT`
   - [ ] Hasil minus saat minus dilarang 422 INSUFFICIENT_STOCK
 - **BE-INV-005** 
   - [ ] Alasan OTHER tanpa catatan 422
-  - [ ] total_cost tidak ada di respons untuk role Kitchen
+  - [ ] total_cost tidak ada di respons untuk role Kitchen; audit `WASTE`
 - **BE-INV-006** 
   - [ ] Filter ingredient, tipe, tanggal dengan paginasi
   - [ ] Low stock memakai min_stock override outlet; stok minus tampil terpisah

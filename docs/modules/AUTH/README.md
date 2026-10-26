@@ -274,10 +274,10 @@ Detail AC lengkap ada di `tickets/tickets.md` (ID sama).
 **Acceptance Criteria ringkas**
 
 - **BE-AUTH-001** 
-  - [ ] Data valid mengembalikan 201 dan membuat business, outlet, Owner, user_outlets
+  - [ ] Data valid mengembalikan 201 dan membuat business, outlet, Owner, user_outlets; audit `BUSINESS_REGISTERED`
   - [ ] Email ganda dan password lemah mengembalikan 422 dengan pesan SRS FR-AUTH-001
 - **BE-AUTH-002** 
-  - [ ] Gagal ke-5 mengunci akun 15 menit (423 ACCOUNT_LOCKED)
+  - [ ] Gagal ke-5 mengunci akun 15 menit (423 ACCOUNT_LOCKED); audit `LOGIN`/`LOGIN_FAILED`
   - [ ] Akun INACTIVE 403; login gagal email tak dikenal tercatat dengan user_id NULL
 - **BE-AUTH-003** 
   - [ ] Password lama salah mengembalikan 422 "Password lama tidak sesuai."

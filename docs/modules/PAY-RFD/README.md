@@ -433,7 +433,7 @@ Detail AC lengkap ada di `tickets/tickets.md` (ID sama).
   - [ ] Cash tendered < total 422; QRIS nominal ≠ total 422
   - [ ] CARD/GATEWAY 422 PAYMENT_METHOD_UNAVAILABLE
 - **BE-PAY-002** 
-  - [ ] Key sama untuk order sama = 200 + Idempotent-Replay; untuk order lain 409
+  - [ ] Key sama untuk order sama = 200 + Idempotent-Replay; untuk order lain 409; audit `PAYMENT_CREATED` after-commit
   - [ ] Order bukan PENDING_PAYMENT 409; header kosong 422
 - **BE-PAY-003** 
   - [ ] Stok kurang dan minus dilarang: rollback total, payment tidak tersimpan
@@ -442,7 +442,7 @@ Detail AC lengkap ada di `tickets/tickets.md` (ID sama).
   - [ ] Struk memuat baris pembulatan bila ada
   - [ ] Cetak ulang dari riwayat memakai data tersimpan
 - **BE-PAY-005** 
-  - [ ] Refund tunai tanpa shift OPEN pelaku 409 NO_OPEN_SHIFT; QRIS shift_id NULL
+  - [ ] Refund tunai tanpa shift OPEN pelaku 409 NO_OPEN_SHIFT; QRIS shift_id NULL; audit `REFUND_CREATED`
   - [ ] Refund kedua 409 ORDER_ALREADY_REFUNDED
 - **DB-PAY-001** 
   - [ ] UNIQUE (business_id, idempotency_key) dan UNIQUE parsial SUCCESS per order

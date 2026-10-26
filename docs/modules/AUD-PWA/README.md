@@ -24,7 +24,24 @@ Audit: setiap aksi sensitif dicatat (append-only). PWA: aplikasi bisa di-install
 ### Modul AUD — Audit Trail
 
 #### FR-AUD-001: Pencatatan
-Aksi wajib: `LOGIN`, `LOGIN_FAILED`, `BUSINESS_REGISTERED`, `USER_CREATED/UPDATED`, `ROLE_CHANGED`, `PRODUCT_PRICE_CHANGED`, `RECIPE_UPDATED`, `SETTING_CHANGED` (pajak, service, stok minus, diskon kasir, pembulatan), `SHIFT_OPENED/CLOSED`, `CASH_IN/CASH_OUT`, `DISCOUNT_APPLIED`, `ORDER_CANCELLED`, `PAYMENT_CREATED`, `REFUND_CREATED`, `STOCK_ADJUSTMENT`, `WASTE`, `STOCK_OPNAME_SUBMITTED`, `OPENING_STOCK`; Phase 2: `GATEWAY_CONFIG_CHANGED`, `GATEWAY_PAYMENT_INITIATED`, `GATEWAY_PAYMENT_SETTLED`, `GATEWAY_PAYMENT_FAILED`, `GATEWAY_PAYMENT_CANCELLED`, `GATEWAY_STOCK_OVERRIDE`, `GATEWAY_REFUND`. Field: business, outlet, user, action, resource, before/after JSON, alasan, IP, waktu. Ditulis setelah commit. Append-only (BR-020). Aksi yang dipotong dari scope (UI audit) tetap dicatat.
+Aksi wajib: `LOGIN`, `LOGIN_FAILED`, `BUSINESS_REGISTERED`, `USER_CREATED/UPDATED`, `ROLE_CHANGED`, `PRODUCT_PRICE_CHANGED`, `RECIPE_UPDATED`, `SETTING_CHANGED` (pajak, service, stok minus, diskon kasir, pembulatan), `SHIFT_OPENED/CLOSED`, `CASH_IN/CASH_OUT`, `DISCOUNT_APPLIED`, `ORDER_CANCELLED`, `PAYMENT_CREATED`, `REFUND_CREATED`, `STOCK_ADJUSTMENT`, `WASTE`, `STOCK_OPNAME_SUBMITTED`, `OPENING_STOCK`, `INGREDIENT_COST_CHANGED`, `SUPPLIER_CREATED/UPDATED`, `PURCHASE_CREATED`, `PURCHASE_RECEIVED`; Phase 2: `GATEWAY_CONFIG_CHANGED`, `GATEWAY_PAYMENT_INITIATED`, `GATEWAY_PAYMENT_SETTLED`, `GATEWAY_PAYMENT_FAILED`, `GATEWAY_PAYMENT_CANCELLED`, `GATEWAY_STOCK_OVERRIDE`, `GATEWAY_REFUND`. Field: business, outlet, user, action, resource, before/after JSON, alasan, IP, waktu. Ditulis setelah commit. Append-only (BR-020). Aksi yang dipotong dari scope (UI audit) tetap dicatat.
+
+**Katalog kode aksi per modul** (sumber tunggal; SDD, tiket, dan modul README mengikuti ini):
+| Modul | Aksi |
+|-------|------|
+| AUTH | `LOGIN`, `LOGIN_FAILED`, `BUSINESS_REGISTERED` |
+| USER | `USER_CREATED`, `USER_UPDATED`, `ROLE_CHANGED` |
+| BIZ | `SETTING_CHANGED` |
+| CAT | `PRODUCT_PRICE_CHANGED` |
+| ING-REC | `RECIPE_UPDATED`, `INGREDIENT_COST_CHANGED` |
+| SHF | `SHIFT_OPENED`, `SHIFT_CLOSED`, `CASH_IN`, `CASH_OUT` |
+| ORD | `DISCOUNT_APPLIED`, `ORDER_CANCELLED` |
+| PAY-RFD | `PAYMENT_CREATED`, `REFUND_CREATED` |
+| ENG-INV | `OPENING_STOCK`, `STOCK_ADJUSTMENT`, `WASTE`, `STOCK_OPNAME_SUBMITTED` |
+| PUR | `SUPPLIER_CREATED`, `SUPPLIER_UPDATED`, `PURCHASE_CREATED`, `PURCHASE_RECEIVED` |
+| GW [P2] | `GATEWAY_CONFIG_CHANGED`, `GATEWAY_PAYMENT_INITIATED/SETTLED/FAILED/CANCELLED`, `GATEWAY_STOCK_OVERRIDE`, `GATEWAY_REFUND` |
+
+`INGREDIENT_COST_CHANGED` dicatat saat `last_cost` bahan berubah: diubah manual (FR-ING-001) atau otomatis saat purchase diterima. Saat receive, boleh menjadi bagian payload `PURCHASE_RECEIVED` (before/after last_cost per bahan) tanpa baris terpisah; perubahan manual memakai `INGREDIENT_COST_CHANGED`.
 
 #### FR-AUD-002: Baca Audit Log (Should) `[R1.1]`
 Filter tanggal, user, aksi, resource. Butuh `audit.view` (Owner; Manager hanya outlet miliknya).
@@ -92,7 +109,7 @@ Detail AC lengkap ada di `tickets/tickets.md` (ID sama).
 
 - **BE-AUD-001** 
   - [ ] Pemanggilan di dalam transaksi baru tertulis setelah commit (afterCommit)
-  - [ ] Payload memuat before/after JSON, user, outlet, IP
+  - [ ] Payload memuat before/after JSON, user, outlet, IP, action (dari katalog SRS FR-AUD-001), reason
 - **DB-AUD-001** 
   - [ ] UPDATE dan DELETE pada audit_logs ditolak trigger DB
   - [ ] Index sesuai ERD §4

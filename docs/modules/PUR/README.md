@@ -230,13 +230,13 @@ Detail AC lengkap ada di `tickets/tickets.md` (ID sama).
 **Acceptance Criteria ringkas**
 
 - **BE-PUR-001** 
-  - [ ] Supplier INACTIVE ditolak saat membuat purchase
+  - [ ] Supplier INACTIVE ditolak saat membuat purchase; audit `SUPPLIER_CREATED`/`SUPPLIER_UPDATED`
   - [ ] Permission suppliers.* sesuai matriks (Owner, Manager, Inventory)
 - **BE-PUR-002** 
-  - [ ] quantity_base = quantity × faktor (kg→g, L→ml = 1000)
+  - [ ] quantity_base = quantity × faktor (kg→g, L→ml = 1000); audit `PURCHASE_CREATED`
   - [ ] Purchase RECEIVED tidak bisa diubah 409 INVALID_STATE_TRANSITION
 - **BE-PUR-003** 
-  - [ ] Receive menambah stok base unit dan last_cost = harga per satuan beli ÷ faktor
+  - [ ] Receive menambah stok base unit dan last_cost = harga per satuan beli ÷ faktor; audit `PURCHASE_RECEIVED` (before/after last_cost per bahan)
   - [ ] Receive ganda tidak menggandakan movement (409 atau replay)
 - **BE-PUR-004** 
   - [ ] Filter dan paginasi bekerja; data tenant lain 404

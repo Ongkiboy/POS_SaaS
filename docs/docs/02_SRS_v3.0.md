@@ -534,7 +534,24 @@ Cashier pada `reports.view` hanya melihat ringkasan shift dan transaksi miliknya
 ### Modul AUD — Audit Trail
 
 #### FR-AUD-001: Pencatatan
-Aksi wajib: `LOGIN`, `LOGIN_FAILED`, `BUSINESS_REGISTERED`, `USER_CREATED/UPDATED`, `ROLE_CHANGED`, `PRODUCT_PRICE_CHANGED`, `RECIPE_UPDATED`, `SETTING_CHANGED` (pajak, service, stok minus, diskon kasir, pembulatan), `SHIFT_OPENED/CLOSED`, `CASH_IN/CASH_OUT`, `DISCOUNT_APPLIED`, `ORDER_CANCELLED`, `PAYMENT_CREATED`, `REFUND_CREATED`, `STOCK_ADJUSTMENT`, `WASTE`, `STOCK_OPNAME_SUBMITTED`, `OPENING_STOCK`; Phase 2: `GATEWAY_CONFIG_CHANGED`, `GATEWAY_PAYMENT_INITIATED`, `GATEWAY_PAYMENT_SETTLED`, `GATEWAY_PAYMENT_FAILED`, `GATEWAY_PAYMENT_CANCELLED`, `GATEWAY_STOCK_OVERRIDE`, `GATEWAY_REFUND`. Field: business, outlet, user, action, resource, before/after JSON, alasan, IP, waktu. Ditulis setelah commit. Append-only (BR-020). Aksi yang dipotong dari scope (UI audit) tetap dicatat.
+Aksi wajib: `LOGIN`, `LOGIN_FAILED`, `BUSINESS_REGISTERED`, `USER_CREATED/UPDATED`, `ROLE_CHANGED`, `PRODUCT_PRICE_CHANGED`, `RECIPE_UPDATED`, `SETTING_CHANGED` (pajak, service, stok minus, diskon kasir, pembulatan), `SHIFT_OPENED/CLOSED`, `CASH_IN/CASH_OUT`, `DISCOUNT_APPLIED`, `ORDER_CANCELLED`, `PAYMENT_CREATED`, `REFUND_CREATED`, `STOCK_ADJUSTMENT`, `WASTE`, `STOCK_OPNAME_SUBMITTED`, `OPENING_STOCK`, `INGREDIENT_COST_CHANGED`, `SUPPLIER_CREATED/UPDATED`, `PURCHASE_CREATED`, `PURCHASE_RECEIVED`; Phase 2: `GATEWAY_CONFIG_CHANGED`, `GATEWAY_PAYMENT_INITIATED`, `GATEWAY_PAYMENT_SETTLED`, `GATEWAY_PAYMENT_FAILED`, `GATEWAY_PAYMENT_CANCELLED`, `GATEWAY_STOCK_OVERRIDE`, `GATEWAY_REFUND`. Field: business, outlet, user, action, resource, before/after JSON, alasan, IP, waktu. Ditulis setelah commit. Append-only (BR-020). Aksi yang dipotong dari scope (UI audit) tetap dicatat.
+
+**Katalog kode aksi per modul** (sumber tunggal; SDD, tiket, dan modul README mengikuti ini):
+| Modul | Aksi |
+|-------|------|
+| AUTH | `LOGIN`, `LOGIN_FAILED`, `BUSINESS_REGISTERED` |
+| USER | `USER_CREATED`, `USER_UPDATED`, `ROLE_CHANGED` |
+| BIZ | `SETTING_CHANGED` |
+| CAT | `PRODUCT_PRICE_CHANGED` |
+| ING-REC | `RECIPE_UPDATED`, `INGREDIENT_COST_CHANGED` |
+| SHF | `SHIFT_OPENED`, `SHIFT_CLOSED`, `CASH_IN`, `CASH_OUT` |
+| ORD | `DISCOUNT_APPLIED`, `ORDER_CANCELLED` |
+| PAY-RFD | `PAYMENT_CREATED`, `REFUND_CREATED` |
+| ENG-INV | `OPENING_STOCK`, `STOCK_ADJUSTMENT`, `WASTE`, `STOCK_OPNAME_SUBMITTED` |
+| PUR | `SUPPLIER_CREATED`, `SUPPLIER_UPDATED`, `PURCHASE_CREATED`, `PURCHASE_RECEIVED` |
+| GW [P2] | `GATEWAY_CONFIG_CHANGED`, `GATEWAY_PAYMENT_INITIATED/SETTLED/FAILED/CANCELLED`, `GATEWAY_STOCK_OVERRIDE`, `GATEWAY_REFUND` |
+
+`INGREDIENT_COST_CHANGED` dicatat saat `last_cost` bahan berubah: diubah manual (FR-ING-001) atau otomatis saat purchase diterima. Saat receive, boleh menjadi bagian payload `PURCHASE_RECEIVED` (before/after last_cost per bahan) tanpa baris terpisah; perubahan manual memakai `INGREDIENT_COST_CHANGED`.
 
 #### FR-AUD-002: Baca Audit Log (Should) `[R1.1]`
 Filter tanggal, user, aksi, resource. Butuh `audit.view` (Owner; Manager hanya outlet miliknya).
@@ -654,7 +671,7 @@ Kontras teks WCAG AA, label pada semua field, target sentuh ≥ 44 px di layar P
 
 ## 4. Aturan Bisnis (Business Rules)
 
-> Total 50 BR (BR-037…044 = Midtrans `[P2]`, BR-045…050 = Purchase). `BR-001…BR-020` sama dengan `BR-01…BR-20` di Audit 01 §8 (revisi sesuai PRD v1.1 dan G0). `BR-021…` baru.
+> Total 51 BR (BR-037…044 = Midtrans `[P2]`, BR-045…050 = Purchase, BR-051 = biaya movement SALE). `BR-001…BR-020` sama dengan `BR-01…BR-20` di Audit 01 §8 (revisi sesuai PRD v1.1 dan G0). `BR-021…` baru.
 
 | ID | Aturan | Dampak jika dilanggar |
 |----|--------|-----------------------|
@@ -672,6 +689,7 @@ Kontras teks WCAG AA, label pada semua field, target sentuh ≥ 44 px di layar P
 | BR-012 | Refund penuh saja, butuh `sales.refund`, alasan wajib; tunai dicatat di shift OPEN pelaku dan ditolak bila tidak ada; restock dipilih per refund (default tidak) | Selisih kas/stok |
 | BR-013 | Edit recipe membuat versi baru; order lama merujuk versi lamanya | HPP historis berubah |
 | BR-014 | Perubahan harga, nama, recipe tidak mengubah order lama (snapshot) | Laporan historis berubah |
+| BR-051 | `unit_cost` pada movement `SALE` memakai biaya bahan dari **snapshot order** (HPP saat item ditambahkan), bukan `last_cost` saat pembayaran, agar konsisten dengan COGS di laporan | HPP laporan ≠ biaya movement |
 | BR-015 | Semua qty stok dan recipe dalam base unit | Salah hitung stok |
 | BR-016 | Adjustment dan waste wajib alasan, qty > 0 (arah ditentukan jenis aksi); waste selalu mengurangi stok | `422` |
 | BR-017 | Opname: selisih = hitungan − snapshot awal, diterapkan ke stok live; maks 1 opname IN_PROGRESS per outlet | Penjualan selama opname hilang |
@@ -797,3 +815,4 @@ Perubahan dari baseline sebelumnya sudah diserap di **Task Breakdown v3.0** (`do
 | 2.0 | 2026-10-12 | Versi final: traceability UC/SEQ/API terisi, ingredient memakai `inventory.adjust`, email unik global, penegasan `PUT /orders/{id}`, default setting dikunci | Claude |
 | 2.1 | 2026-10-12 | Midtrans [P2]: FR-BIZ-004, FR-PAY-003…005, FR-RFD-002, FR-RPT-007, BR-037…044 (total 44 BR), permission `payment_config.manage`, NFR-PERF-007/008, NFR-SEC-008…010, NFR-DATA-004, NFR-REL-003, penyesuaian FR-ORD-004/005, FR-SHF-003, FR-PAY-002, FR-RPT-003, FR-AUD-001; antarmuka Midtrans; ERD v3.0 jadi sumber skema; traceability F-21; risiko R-06…R-10 | Claude |
 | 3.0 | 2026-10-25 | Baseline final: modul PUR (FR-PUR-001…005, BR-045…050), penanda rilis R1.1, Vue 3/Spatie/Supabase, matriks permission purchase aktif, risiko diperbarui, tanpa daftar re-baseline terpisah | Claude |
+| 3.0.1 | 2026-10-26 | Kontrak audit: katalog kode aksi FR-AUD-001, INGREDIENT_COST_CHANGED, PURCHASE/SUPPLIER aksi, BR-051 (unit_cost SALE = snapshot order) | Claude |
