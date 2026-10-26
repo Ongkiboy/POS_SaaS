@@ -50,7 +50,7 @@ gh issue create --title '[BE-ING-001] CRUD ingredient (permission inventory.adju
 CRUD ingredient (permission inventory.adjust, baca inventory.view). Rujukan: FR-ING-001; UC-ING-01.
 
 **Acceptance Criteria**
-- [ ] SKU ganda 422; base unit tidak bisa diubah bila sudah ada movement
+- [ ] SKU ganda 422; base unit tidak bisa diubah bila sudah ada movement; perubahan `last_cost` manual menulis audit `INGREDIENT_COST_CHANGED`
 - [ ] last_cost negatif ditolak; perubahan tidak mengubah movement/order lama
 
 **Depends on:** DB-ING-001, BE-RBAC-001
@@ -83,7 +83,7 @@ gh issue create --title '[BE-REC-001] Recipe per produk: edit = versi baru, 1 ak
 Recipe per produk: edit = versi baru, 1 aktif; role view tanpa HPP. Rujukan: FR-REC-001; UC-REC-01; SEQ-REC-01.
 
 **Acceptance Criteria**
-- [ ] Simpan membuat version+1 dan menonaktifkan versi lama dalam satu transaksi
+- [ ] Simpan membuat version+1, menonaktifkan versi lama (satu transaksi), audit `RECIPE_UPDATED`
 - [ ] Qty ≤ 0, bahan ganda, recipe kosong ditolak dengan pesan SRS
 
 **Depends on:** DB-REC-001, BE-ING-001, BE-CAT-002
@@ -138,7 +138,7 @@ gh issue create --title '[BE-INV-003] POST /inventory/opening-stock (batch + mov
 POST /inventory/opening-stock (batch + movement OPENING). Rujukan: FR-INV-001; UC-INV-01; SEQ-INV-01.
 
 **Acceptance Criteria**
-- [ ] Satu batch menghasilkan satu movement OPENING per bahan dengan reference_id = id batch
+- [ ] Satu batch menghasilkan satu movement OPENING per bahan dengan reference_id = id batch; audit `OPENING_STOCK`
 - [ ] Qty ≤ 0 dan bahan ganda dalam batch ditolak
 
 **Depends on:** BE-INV-001
@@ -149,7 +149,7 @@ gh issue create --title '[BE-INV-004] POST/GET /inventory/adjustments (record di
 POST/GET /inventory/adjustments (record dibuat sebelum movement). Rujukan: FR-INV-003; UC-INV-03.
 
 **Acceptance Criteria**
-- [ ] Alasan wajib dan qty > 0; before/after tersimpan
+- [ ] Alasan wajib dan qty > 0; before/after tersimpan; audit `STOCK_ADJUSTMENT`
 - [ ] Hasil minus saat minus dilarang 422 INSUFFICIENT_STOCK
 
 **Depends on:** BE-INV-001, BE-AUD-001
@@ -172,7 +172,7 @@ DeductStockForOrder: lock urut ingredient_id, movement SALE idempoten. Rujukan: 
 
 **Acceptance Criteria**
 - [ ] Dua order paralel dengan bahan sama tidak deadlock dan stok benar
-- [ ] Movement SALE unit_cost memakai last_cost saat kejadian
+- [ ] Movement SALE unit_cost memakai biaya dari snapshot order (BR-051), bukan last_cost saat bayar
 
 **Depends on:** BE-ENG-001, BE-INV-002
 **References:** ADR-002; SEQ-PAY-01
@@ -205,7 +205,7 @@ POST/GET /inventory/waste (alasan enum, snapshot biaya, Kitchen tanpa biaya). Ru
 
 **Acceptance Criteria**
 - [ ] Alasan OTHER tanpa catatan 422
-- [ ] total_cost tidak ada di respons untuk role Kitchen
+- [ ] total_cost tidak ada di respons untuk role Kitchen; audit `WASTE`
 
 **Depends on:** BE-INV-001, BE-AUD-001
 **References:** FR-INV-004; UC-INV-04; BR-034

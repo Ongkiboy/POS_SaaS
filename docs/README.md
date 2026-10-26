@@ -11,6 +11,9 @@
 | Menulis test | `docs/09_Test_Plan_v3.0.md` |
 | Deploy/ops | `docs/10_Deploy_Ops_v3.0.md` |
 
+## Untuk implementasi dengan Claude Code
+Taruh `CLAUDE.md` (di root paket ini) ke root repo, dan `CLAUDE.local.md` ke root repo juga (tambahkan ke `.gitignore`). Salin folder `docs/` ke `backend/../docs` repo, dan rename `tickets/by-owner/ongki/tickets.md` → `docs/tickets_ongki.md` (dirujuk oleh CLAUDE.md). Jalankan `claude` dari root repo; jangan `/init`.
+
 ## Isi paket
 ```
 docs/

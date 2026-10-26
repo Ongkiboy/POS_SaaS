@@ -104,6 +104,7 @@ Detail AC lengkap ada di `tickets/tickets.md` (ID sama).
 - **BE-USER-001** 
   - [ ] Manager yang memilih role di luar Cashier/Inventory/Kitchen mendapat 403
   - [ ] Owner terakhir tidak bisa dinonaktifkan atau diganti role
+  - [ ] Audit `USER_CREATED`/`USER_UPDATED`/`ROLE_CHANGED` tercatat
 - **FE-USER-001** 
   - [ ] Dropdown role hanya menampilkan role yang boleh dipilih pelaku (GET /roles)
   - [ ] State empty, loading, error tersedia

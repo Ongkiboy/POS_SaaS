@@ -62,7 +62,7 @@ CRUD outlet + pengaturan (pajak, service, minus, diskon kasir, rounding, struk).
 
 **Acceptance Criteria**
 - [ ] Manager hanya boleh ubah pajak, service, struk; rounding_increment hanya Owner
-- [ ] Kode outlet tidak bisa diubah setelah ada order; perubahan setting tercatat audit before/after
+- [ ] Kode outlet tidak bisa diubah setelah ada order; audit `SETTING_CHANGED` before/after per field
 
 **Depends on:** BE-RBAC-001, BE-AUD-001
 **References:** FR-BIZ-002, FR-BIZ-003; UC-BIZ-02
@@ -117,7 +117,7 @@ Open shift (opening cash, business_date menurut timezone outlet). Rujukan: FR-SH
 
 **Acceptance Criteria**
 - [ ] Sudah ada shift OPEN 409 SHIFT_ALREADY_OPEN
-- [ ] Opening cash negatif 422; audit SHIFT_OPENED
+- [ ] Opening cash negatif 422; audit `SHIFT_OPENED`
 
 **Depends on:** DB-SHF-001, BE-RBAC-001
 **References:** FR-SHF-001; UC-SHF-01; SEQ-SHF-01
@@ -149,7 +149,7 @@ gh issue create --title '[BE-PUR-001] CRUD supplier (soft delete, INACTIVE tidak
 CRUD supplier (soft delete, INACTIVE tidak bisa dipilih). Rujukan: FR-PUR-001; UC-PUR-01.
 
 **Acceptance Criteria**
-- [ ] Supplier INACTIVE ditolak saat membuat purchase
+- [ ] Supplier INACTIVE ditolak saat membuat purchase; audit `SUPPLIER_CREATED`/`SUPPLIER_UPDATED`
 - [ ] Permission suppliers.* sesuai matriks (Owner, Manager, Inventory)
 
 **Depends on:** DB-PUR-001, BE-RBAC-001
@@ -162,6 +162,7 @@ CRUD user + assign role & outlet + nonaktifkan (aturan Manager limited), audit. 
 **Acceptance Criteria**
 - [ ] Manager yang memilih role di luar Cashier/Inventory/Kitchen mendapat 403
 - [ ] Owner terakhir tidak bisa dinonaktifkan atau diganti role
+- [ ] Audit `USER_CREATED`/`USER_UPDATED`/`ROLE_CHANGED` tercatat
 
 **Depends on:** BE-RBAC-001, BE-AUD-001
 **References:** FR-USER-001; UC-USER-01; BR-024
@@ -183,7 +184,7 @@ Close shift: tolak bila ada order DRAFT/PENDING, hitung selisih, audit. Rujukan:
 
 **Acceptance Criteria**
 - [ ] Ada order pending 409 SHIFT_HAS_PENDING_ORDERS dengan jumlah order
-- [ ] Sukses menyimpan expected, actual, difference; shift CLOSED tidak menerima transaksi
+- [ ] Sukses menyimpan expected, actual, difference; shift CLOSED tidak menerima transaksi; audit `SHIFT_CLOSED`
 
 **Depends on:** BE-SHF-003, BE-ORD-005
 **References:** FR-SHF-003; UC-SHF-03; BR-003
@@ -204,7 +205,7 @@ gh issue create --title '[BE-PUR-002] Purchase DRAFT: buat/ubah item (satuan bel
 Purchase DRAFT: buat/ubah item (satuan beli + faktor konversi), nomor PO. Rujukan: FR-PUR-002; UC-PUR-02; BR-046, BR-049.
 
 **Acceptance Criteria**
-- [ ] quantity_base = quantity × faktor (kg→g, L→ml = 1000)
+- [ ] quantity_base = quantity × faktor (kg→g, L→ml = 1000); audit `PURCHASE_CREATED`
 - [ ] Purchase RECEIVED tidak bisa diubah 409 INVALID_STATE_TRANSITION
 
 **Depends on:** BE-PUR-001, BE-ING-001, BE-INV-003
@@ -215,7 +216,7 @@ gh issue create --title '[BE-PUR-003] Receive purchase: movement PURCHASE, updat
 Receive purchase: movement PURCHASE, update last_cost, atomik dan idempoten. Rujukan: FR-PUR-003; UC-PUR-03; SEQ-PUR-01; BR-045, BR-047.
 
 **Acceptance Criteria**
-- [ ] Receive menambah stok base unit dan last_cost = harga per satuan beli ÷ faktor
+- [ ] Receive menambah stok base unit dan last_cost = harga per satuan beli ÷ faktor; audit `PURCHASE_RECEIVED` (before/after last_cost per bahan)
 - [ ] Receive ganda tidak menggandakan movement (409 atau replay)
 
 **Depends on:** BE-PUR-002, BE-INV-002
@@ -293,7 +294,7 @@ Cash in / cash out (alasan wajib, cash.manage). Rujukan: FR-SHF-002; UC-SHF-02.
 
 **Acceptance Criteria**
 - [ ] Alasan kosong 422; tanpa shift OPEN 409
-- [ ] Tercatat append-only dan masuk audit
+- [ ] Audit `CASH_IN`/`CASH_OUT` tercatat (append-only)
 
 **Depends on:** BE-SHF-001
 **References:** FR-SHF-002; UC-SHF-02

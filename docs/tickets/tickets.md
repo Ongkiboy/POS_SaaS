@@ -477,7 +477,7 @@ AuditLogger::log(action, resource, before, after, reason) dipanggil setelah comm
 
 **Acceptance Criteria**
 - [ ] Pemanggilan di dalam transaksi baru tertulis setelah commit (afterCommit)
-- [ ] Payload memuat before/after JSON, user, outlet, IP
+- [ ] Payload memuat before/after JSON, user, outlet, IP, action (dari katalog SRS FR-AUD-001), reason
 
 **Technical Notes**
 - Ikuti Technical Design §2: Controller tipis → Action/Service → Model; Form Request, Policy, API Resource; transaksi dan `afterCommit` sesuai SDD
@@ -544,7 +544,7 @@ TC-RBAC-002, TC-RBAC-003
 POST /auth/register-business (business + outlet + Owner + seed role, satu transaksi). Rujukan: FR-AUTH-001; UC-AUTH-01; SEQ-AUTH-01.
 
 **Acceptance Criteria**
-- [ ] Data valid mengembalikan 201 dan membuat business, outlet, Owner, user_outlets
+- [ ] Data valid mengembalikan 201 dan membuat business, outlet, Owner, user_outlets; audit `BUSINESS_REGISTERED`
 - [ ] Email ganda dan password lemah mengembalikan 422 dengan pesan SRS FR-AUTH-001
 
 **Technical Notes**
@@ -578,7 +578,7 @@ TC-AUTH-001, TC-AUTH-002, TC-AUTH-003
 Login/logout Sanctum SPA, throttle, lockout 5×/15 menit, audit LOGIN dan LOGIN_FAILED. Rujukan: FR-AUTH-002; UC-AUTH-02; BR-023.
 
 **Acceptance Criteria**
-- [ ] Gagal ke-5 mengunci akun 15 menit (423 ACCOUNT_LOCKED)
+- [ ] Gagal ke-5 mengunci akun 15 menit (423 ACCOUNT_LOCKED); audit `LOGIN`/`LOGIN_FAILED`
 - [ ] Akun INACTIVE 403; login gagal email tak dikenal tercatat dengan user_id NULL
 
 **Technical Notes**
@@ -682,6 +682,7 @@ CRUD user + assign role & outlet + nonaktifkan (aturan Manager limited), audit. 
 **Acceptance Criteria**
 - [ ] Manager yang memilih role di luar Cashier/Inventory/Kitchen mendapat 403
 - [ ] Owner terakhir tidak bisa dinonaktifkan atau diganti role
+- [ ] Audit `USER_CREATED`/`USER_UPDATED`/`ROLE_CHANGED` tercatat
 
 **Technical Notes**
 - Ikuti Technical Design §2: Controller tipis → Action/Service → Model; Form Request, Policy, API Resource; transaksi dan `afterCommit` sesuai SDD
@@ -715,7 +716,7 @@ CRUD outlet + pengaturan (pajak, service, minus, diskon kasir, rounding, struk).
 
 **Acceptance Criteria**
 - [ ] Manager hanya boleh ubah pajak, service, struk; rounding_increment hanya Owner
-- [ ] Kode outlet tidak bisa diubah setelah ada order; perubahan setting tercatat audit before/after
+- [ ] Kode outlet tidak bisa diubah setelah ada order; audit `SETTING_CHANGED` before/after per field
 
 **Technical Notes**
 - Ikuti Technical Design §2: Controller tipis → Action/Service → Model; Form Request, Policy, API Resource; transaksi dan `afterCommit` sesuai SDD
@@ -1394,7 +1395,7 @@ TC-ING-001
 CRUD ingredient (permission inventory.adjust, baca inventory.view). Rujukan: FR-ING-001; UC-ING-01.
 
 **Acceptance Criteria**
-- [ ] SKU ganda 422; base unit tidak bisa diubah bila sudah ada movement
+- [ ] SKU ganda 422; base unit tidak bisa diubah bila sudah ada movement; perubahan `last_cost` manual menulis audit `INGREDIENT_COST_CHANGED`
 - [ ] last_cost negatif ditolak; perubahan tidak mengubah movement/order lama
 
 **Technical Notes**
@@ -1496,7 +1497,7 @@ TC-REC-001
 Recipe per produk: edit = versi baru, 1 aktif; role view tanpa HPP. Rujukan: FR-REC-001; UC-REC-01; SEQ-REC-01.
 
 **Acceptance Criteria**
-- [ ] Simpan membuat version+1 dan menonaktifkan versi lama dalam satu transaksi
+- [ ] Simpan membuat version+1, menonaktifkan versi lama (satu transaksi), audit `RECIPE_UPDATED`
 - [ ] Qty ≤ 0, bahan ganda, recipe kosong ditolak dengan pesan SRS
 
 **Technical Notes**
@@ -1768,7 +1769,7 @@ TC-INV-001
 POST /inventory/opening-stock (batch + movement OPENING). Rujukan: FR-INV-001; UC-INV-01; SEQ-INV-01.
 
 **Acceptance Criteria**
-- [ ] Satu batch menghasilkan satu movement OPENING per bahan dengan reference_id = id batch
+- [ ] Satu batch menghasilkan satu movement OPENING per bahan dengan reference_id = id batch; audit `OPENING_STOCK`
 - [ ] Qty ≤ 0 dan bahan ganda dalam batch ditolak
 
 **Technical Notes**
@@ -1802,7 +1803,7 @@ TC-INV-004
 POST/GET /inventory/adjustments (record dibuat sebelum movement). Rujukan: FR-INV-003; UC-INV-03.
 
 **Acceptance Criteria**
-- [ ] Alasan wajib dan qty > 0; before/after tersimpan
+- [ ] Alasan wajib dan qty > 0; before/after tersimpan; audit `STOCK_ADJUSTMENT`
 - [ ] Hasil minus saat minus dilarang 422 INSUFFICIENT_STOCK
 
 **Technical Notes**
@@ -1837,7 +1838,7 @@ POST/GET /inventory/waste (alasan enum, snapshot biaya, Kitchen tanpa biaya). Ru
 
 **Acceptance Criteria**
 - [ ] Alasan OTHER tanpa catatan 422
-- [ ] total_cost tidak ada di respons untuk role Kitchen
+- [ ] total_cost tidak ada di respons untuk role Kitchen; audit `WASTE`
 
 **Technical Notes**
 - Ikuti Technical Design §2: Controller tipis → Action/Service → Model; Form Request, Policy, API Resource; transaksi dan `afterCommit` sesuai SDD
@@ -2143,7 +2144,7 @@ Open shift (opening cash, business_date menurut timezone outlet). Rujukan: FR-SH
 
 **Acceptance Criteria**
 - [ ] Sudah ada shift OPEN 409 SHIFT_ALREADY_OPEN
-- [ ] Opening cash negatif 422; audit SHIFT_OPENED
+- [ ] Opening cash negatif 422; audit `SHIFT_OPENED`
 
 **Technical Notes**
 - Ikuti Technical Design §2: Controller tipis → Action/Service → Model; Form Request, Policy, API Resource; transaksi dan `afterCommit` sesuai SDD
@@ -2177,7 +2178,7 @@ Cash in / cash out (alasan wajib, cash.manage). Rujukan: FR-SHF-002; UC-SHF-02.
 
 **Acceptance Criteria**
 - [ ] Alasan kosong 422; tanpa shift OPEN 409
-- [ ] Tercatat append-only dan masuk audit
+- [ ] Audit `CASH_IN`/`CASH_OUT` tercatat (append-only)
 
 **Technical Notes**
 - Ikuti Technical Design §2: Controller tipis → Action/Service → Model; Form Request, Policy, API Resource; transaksi dan `afterCommit` sesuai SDD
@@ -2245,7 +2246,7 @@ Close shift: tolak bila ada order DRAFT/PENDING, hitung selisih, audit. Rujukan:
 
 **Acceptance Criteria**
 - [ ] Ada order pending 409 SHIFT_HAS_PENDING_ORDERS dengan jumlah order
-- [ ] Sukses menyimpan expected, actual, difference; shift CLOSED tidak menerima transaksi
+- [ ] Sukses menyimpan expected, actual, difference; shift CLOSED tidak menerima transaksi; audit `SHIFT_CLOSED`
 
 **Technical Notes**
 - Ikuti Technical Design §2: Controller tipis → Action/Service → Model; Form Request, Policy, API Resource; transaksi dan `afterCommit` sesuai SDD
@@ -2584,7 +2585,7 @@ TC-ORD-006, TC-ORD-009
 Diskon order-level (persen/nominal), batas Cashier per outlet, audit. Rujukan: FR-ORD-003; UC-ORD-02.
 
 **Acceptance Criteria**
-- [ ] Diskon > subtotal 422 DISCOUNT_INVALID
+- [ ] Diskon > subtotal 422 DISCOUNT_INVALID; audit `DISCOUNT_APPLIED`
 - [ ] Cashier melebihi batas outlet 403 DISCOUNT_LIMIT_EXCEEDED
 
 **Technical Notes**
@@ -2652,7 +2653,7 @@ TC-ORD-007, TC-ORD-010
 Cancel order (DRAFT/PENDING, alasan wajib, aturan Cashier limited, audit). Rujukan: FR-ORD-005; UC-ORD-03; BR-025.
 
 **Acceptance Criteria**
-- [ ] Order sudah dibayar 409 "harus melalui refund"
+- [ ] Order sudah dibayar 409 "harus melalui refund"; audit `ORDER_CANCELLED`
 - [ ] Cashier membatalkan order orang lain 403
 
 **Technical Notes**
@@ -2992,7 +2993,7 @@ TC-PAY-001, TC-PAY-002, TC-PAY-003
 POST /orders/{id}/pay: Idempotency-Key, lock order, PAID→COMPLETED atomik. Rujukan: FR-PAY-001; UC-PAY-01; SEQ-PAY-01.
 
 **Acceptance Criteria**
-- [ ] Key sama untuk order sama = 200 + Idempotent-Replay; untuk order lain 409
+- [ ] Key sama untuk order sama = 200 + Idempotent-Replay; untuk order lain 409; audit `PAYMENT_CREATED` after-commit
 - [ ] Order bukan PENDING_PAYMENT 409; header kosong 422
 
 **Technical Notes**
@@ -3094,7 +3095,7 @@ TC-PAY-014
 Refund penuh: permission, alasan, kas ke shift OPEN pelaku, restock opsional, audit. Rujukan: FR-RFD-001; UC-RFD-01; SEQ-RFD-01.
 
 **Acceptance Criteria**
-- [ ] Refund tunai tanpa shift OPEN pelaku 409 NO_OPEN_SHIFT; QRIS shift_id NULL
+- [ ] Refund tunai tanpa shift OPEN pelaku 409 NO_OPEN_SHIFT; QRIS shift_id NULL; audit `REFUND_CREATED`
 - [ ] Refund kedua 409 ORDER_ALREADY_REFUNDED
 
 **Technical Notes**
@@ -3333,7 +3334,7 @@ DeductStockForOrder: lock urut ingredient_id, movement SALE idempoten. Rujukan: 
 
 **Acceptance Criteria**
 - [ ] Dua order paralel dengan bahan sama tidak deadlock dan stok benar
-- [ ] Movement SALE unit_cost memakai last_cost saat kejadian
+- [ ] Movement SALE unit_cost memakai biaya dari snapshot order (BR-051), bukan last_cost saat bayar
 
 **Technical Notes**
 - Ikuti Technical Design §2: Controller tipis → Action/Service → Model; Form Request, Policy, API Resource; transaksi dan `afterCommit` sesuai SDD
@@ -3604,7 +3605,7 @@ TC-PUR-002
 CRUD supplier (soft delete, INACTIVE tidak bisa dipilih). Rujukan: FR-PUR-001; UC-PUR-01.
 
 **Acceptance Criteria**
-- [ ] Supplier INACTIVE ditolak saat membuat purchase
+- [ ] Supplier INACTIVE ditolak saat membuat purchase; audit `SUPPLIER_CREATED`/`SUPPLIER_UPDATED`
 - [ ] Permission suppliers.* sesuai matriks (Owner, Manager, Inventory)
 
 **Technical Notes**
@@ -3638,7 +3639,7 @@ TC-PUR-001, TC-PUR-006
 Purchase DRAFT: buat/ubah item (satuan beli + faktor konversi), nomor PO. Rujukan: FR-PUR-002; UC-PUR-02; BR-046, BR-049.
 
 **Acceptance Criteria**
-- [ ] quantity_base = quantity × faktor (kg→g, L→ml = 1000)
+- [ ] quantity_base = quantity × faktor (kg→g, L→ml = 1000); audit `PURCHASE_CREATED`
 - [ ] Purchase RECEIVED tidak bisa diubah 409 INVALID_STATE_TRANSITION
 
 **Technical Notes**
@@ -3672,7 +3673,7 @@ TC-PUR-002, TC-PUR-005
 Receive purchase: movement PURCHASE, update last_cost, atomik dan idempoten. Rujukan: FR-PUR-003; UC-PUR-03; SEQ-PUR-01; BR-045, BR-047.
 
 **Acceptance Criteria**
-- [ ] Receive menambah stok base unit dan last_cost = harga per satuan beli ÷ faktor
+- [ ] Receive menambah stok base unit dan last_cost = harga per satuan beli ÷ faktor; audit `PURCHASE_RECEIVED` (before/after last_cost per bahan)
 - [ ] Receive ganda tidak menggandakan movement (409 atau replay)
 
 **Technical Notes**
