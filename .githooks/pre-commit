@@ -1,5 +1,5 @@
 #!/bin/sh
-# Pre-commit: Pint (backend) + ESLint/Prettier (frontend) pada file yang di-stage.
+# Pre-commit: Pint (backend) + Oxlint/ESLint/Prettier (frontend) pada file yang di-stage.
 # Aktifkan sekali per clone:  git config core.hooksPath .githooks
 # Larastan sengaja tidak dijalankan di sini (lambat); dijalankan di CI (SETUP-004).
 
@@ -15,11 +15,13 @@ if [ -n "$PHP_FILES" ]; then
   (cd backend && php vendor/bin/pint --test $PHP_FILES)
 fi
 
-# --- Frontend: ESLint dan Prettier ---
+# --- Frontend: Oxlint, ESLint, dan Prettier ---
 FE_LINT=$(git diff --cached --name-only --diff-filter=ACM -- 'frontend/*.vue' 'frontend/*.ts' 'frontend/*.mts' 'frontend/*.js' | sed 's|^frontend/||')
 FE_FORMAT=$(git diff --cached --name-only --diff-filter=ACM -- 'frontend/*.vue' 'frontend/*.ts' 'frontend/*.mts' 'frontend/*.js' 'frontend/*.css' | sed 's|^frontend/||')
 
 if [ -n "$FE_LINT" ]; then
+  echo "[pre-commit] Oxlint..."
+  (cd frontend && npx oxlint $FE_LINT)
   echo "[pre-commit] ESLint..."
   (cd frontend && npx eslint --no-warn-ignored $FE_LINT)
 fi
