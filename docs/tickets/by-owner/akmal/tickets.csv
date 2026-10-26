@@ -1,0 +1,107 @@
+id,title,type,module,phase,estimate,status,depends_on,references,assignee,reviewer,sprint,labels,branch,pr,acceptance_criteria
+SETUP-003,"[SETUP-003] Pint, Larastan, ESLint, Prettier, pre-commit hook",setup,,FASE 0 — SETUP & INFRASTRUKTUR (S1),S,todo,SETUP-001,TD §7,@akmal,@naufaldi,S1,"setup, core",feature/setup-003-pint-larastan-eslint-prettier-pre-commit,,"- [ ] Commit gagal bila Pint/ESLint melaporkan error
+- [ ] Larastan level yang disepakati lulus pada skeleton"
+SETUP-004,[SETUP-004] CI GitHub Actions: lint + Pest + build frontend,setup,,FASE 0 — SETUP & INFRASTRUKTUR (S1),M,todo,SETUP-003,DEPLOY ops §1,@akmal,@naufaldi,S1,"setup, core",feature/setup-004-ci-github-actions-lint-pest-build-fronte,,"- [ ] PR memicu lint, Pest, dan `npm run build` (Vite); status check; gagal salah satu = merge diblok
+- [ ] Pest memakai database PostgreSQL service container (bukan SQLite)"
+SETUP-009,"[SETUP-009] Arch test Pest: dependensi modul (peta panah), registrasi modul, dan pola nama migrasi",setup,,FASE 0 — SETUP & INFRASTRUKTUR (S1),M,todo,SETUP-005,"TD §2.3, §2.4",@akmal,@naufaldi,S1,"setup, core",feature/setup-009-arch-test-pest-dependensi-modul-peta-pan,,"- [ ] Arch test gagal bila Recipe memanggil POS/Inventory atau Inventory memanggil POS; modul hanya bicara lewat Contract/Facade yang terdaftar
+- [ ] Arch test gagal bila ada class `XxxModule` yang belum terdaftar di `config/modules.php` (kecuali `Payments\Gateway`) atau nama migrasi tidak mengikuti pola `modul_aksi_tabel`"
+DB-ING-001,"[DB-ING-001] Migrasi units, ingredients, ingredient_unit_conversions (seed kg→g, L→ml = 1000)",database,ING,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,DB-TEN-002,ERD §3.2; BR-046,@akmal,@naufaldi,S1,"database, ing, core",feature/db-ing-001-migrasi-units-ingredients-ingredient-uni,,"- [ ] Unit g, kg, ml, L, pcs ter-seed; faktor kg→g dan L→ml = 1000
+- [ ] last_cost DECIMAL(18,4), CHECK ≥ 0"
+BE-ING-001,"[BE-ING-001] CRUD ingredient (permission inventory.adjust, baca inventory.view)",backend,ING,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"DB-ING-001, BE-RBAC-001",FR-ING-001; UC-ING-01,@akmal,@naufaldi,S1,"backend, ing, core",feature/be-ing-001-crud-ingredient-permission-inventory-adj,,"- [ ] SKU ganda 422; base unit tidak bisa diubah bila sudah ada movement
+- [ ] last_cost negatif ditolak; perubahan tidak mengubah movement/order lama"
+BE-ING-002,[BE-ING-002] Seeder unit + endpoint GET /units,backend,ING,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",XS,todo,DB-ING-001,FR-ING-001,@akmal,@naufaldi,S1,"backend, ing, core",feature/be-ing-002-seeder-unit-endpoint-get-units,,"- [ ] GET /units mengembalikan 5 satuan
+- [ ] Seeder idempoten (aman dijalankan ulang)"
+DB-REC-001,"[DB-REC-001] Migrasi recipes (versi), recipe_items, modifier_option_recipe_items",database,REC,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,"DB-ING-001, DB-CAT-001",ERD §3.2; BR-013,@akmal,@naufaldi,S1,"database, rec, core",feature/db-rec-001-migrasi-recipes-versi-recipe-items-modif,,"- [ ] UNIQUE parsial 1 recipe aktif per produk
+- [ ] UNIQUE (recipe_id, ingredient_id)"
+BE-REC-001,"[BE-REC-001] Recipe per produk: edit = versi baru, 1 aktif; role view tanpa HPP",backend,REC,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"DB-REC-001, BE-ING-001, BE-CAT-002",FR-REC-001; UC-REC-01; SEQ-REC-01,@akmal,@naufaldi,S2,"backend, rec, core",feature/be-rec-001-recipe-per-produk-edit-versi-baru-1-akti,,"- [ ] Simpan membuat version+1 dan menonaktifkan versi lama dalam satu transaksi
+- [ ] Qty ≤ 0, bahan ganda, recipe kosong ditolak dengan pesan SRS"
+BE-REC-002,"[BE-REC-002] Kalkulator HPP (qty × last_cost, half-up) tanpa kolom cost_price",backend,REC,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,BE-REC-001,FR-REC-003; BR-014,@akmal,@naufaldi,S2,"backend, rec, core",feature/be-rec-002-kalkulator-hpp-qty-last-cost-half-up-tan,,"- [ ] HPP produk tanpa recipe = 0 dan ditandai no recipe
+- [ ] HPP hanya tampil untuk Owner dan Manager"
+DB-INV-001,"[DB-INV-001] Migrasi stock_balances, stock_movements (trigger append-only), stock_adjustments, waste_records, stock_opening_batches",database,INV,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"DB-ING-001, DB-AUD-001",ERD §3.3; ADR-007,@akmal,@naufaldi,S2,"database, inv, core",feature/db-inv-001-migrasi-stock-balances-stock-movements-t,,"- [ ] UNIQUE idempotensi movement dan CHECK arah delta sesuai ERD
+- [ ] UPDATE/DELETE movement ditolak trigger"
+BE-INV-001,"[BE-INV-001] StockService::apply() (lock FOR UPDATE, before/after, allow_negative_stock, forceNegative)",backend,INV,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,DB-INV-001,ADR-002; ACT-INV-01,@akmal,@naufaldi,S2,"backend, inv, core",feature/be-inv-001-stockservice-apply-lock-for-update-befor,,"- [ ] Stok kurang dan minus dilarang melempar InsufficientStock
+- [ ] forceNegative hanya dipakai jalur settlement gateway (default false)"
+BE-INV-002,[BE-INV-002] Idempotensi movement (referensi sama = movement lama) + helper reverse(),backend,INV,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,BE-INV-001,BR-009; NFR-DATA-003,@akmal,@naufaldi,S2,"backend, inv, core",feature/be-inv-002-idempotensi-movement-referensi-sama-move,,"- [ ] Pemanggilan ulang dengan referensi sama mengembalikan movement lama tanpa baris baru
+- [ ] reverse() membuat movement lawan dengan referensi baru"
+BE-INV-003,[BE-INV-003] POST /inventory/opening-stock (batch + movement OPENING),backend,INV,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,BE-INV-001,FR-INV-001; UC-INV-01; SEQ-INV-01,@akmal,@naufaldi,S2,"backend, inv, core",feature/be-inv-003-post-inventory-opening-stock-batch-movem,,"- [ ] Satu batch menghasilkan satu movement OPENING per bahan dengan reference_id = id batch
+- [ ] Qty ≤ 0 dan bahan ganda dalam batch ditolak"
+BE-INV-004,[BE-INV-004] POST/GET /inventory/adjustments (record dibuat sebelum movement),backend,INV,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"BE-INV-001, BE-AUD-001",FR-INV-003; UC-INV-03,@akmal,@naufaldi,S2,"backend, inv, core",feature/be-inv-004-post-get-inventory-adjustments-record-di,,"- [ ] Alasan wajib dan qty > 0; before/after tersimpan
+- [ ] Hasil minus saat minus dilarang 422 INSUFFICIENT_STOCK"
+BE-ENG-001,"[BE-ENG-001] RecipeUsageCalculator: item × recipe (versi snapshot), agregat per bahan",backend,ENG,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"BE-REC-001, DB-ORD-001","FR-ENG-001; BR-009, BR-010",@akmal,@naufaldi,S2,"backend, eng, core",feature/be-eng-001-recipeusagecalculator-item-recipe-versi,,"- [ ] Bahan sama di beberapa item diagregat menjadi satu angka
+- [ ] Produk tanpa recipe dilewati"
+BE-ENG-002,"[BE-ENG-002] DeductStockForOrder: lock urut ingredient_id, movement SALE idempoten",backend,ENG,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"BE-ENG-001, BE-INV-002",ADR-002; SEQ-PAY-01,@akmal,@naufaldi,S2,"backend, eng, core",feature/be-eng-002-deductstockfororder-lock-urut-ingredient,,"- [ ] Dua order paralel dengan bahan sama tidak deadlock dan stok benar
+- [ ] Movement SALE unit_cost memakai last_cost saat kejadian"
+TEST-CAT-001,"[TEST-CAT-001] Feature test katalog (tenant, SKU unik, inactive, cache)",testing,CAT,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,BE-CAT-005,FR-CAT-001…004,@akmal,@naufaldi,S3,"testing, cat, core",feature/test-cat-001-feature-test-katalog-tenant-sku-unik-ina,,"- [ ] Semua baris tabel validasi FR-CAT-002/003 punya test
+- [ ] Test cache invalidasi lulus"
+FE-ING-001,[FE-ING-001] Halaman ingredient,frontend,ING,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"BE-ING-001, FE-AUTH-003",SCR-ING-01,@akmal,@naufaldi,S3,"frontend, ing, core",feature/fe-ing-001-halaman-ingredient,,"- [ ] CRUD ingredient dengan pesan error SRS
+- [ ] Base unit terkunci bila sudah ada movement"
+BE-INV-005,"[BE-INV-005] POST/GET /inventory/waste (alasan enum, snapshot biaya, Kitchen tanpa biaya)",backend,INV,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"BE-INV-001, BE-AUD-001",FR-INV-004; UC-INV-04; BR-034,@akmal,@naufaldi,S3,"backend, inv, core",feature/be-inv-005-post-get-inventory-waste-alasan-enum-sna,,"- [ ] Alasan OTHER tanpa catatan 422
+- [ ] total_cost tidak ada di respons untuk role Kitchen"
+BE-INV-006,"[BE-INV-006] GET stok, riwayat movement, low stock + stok minus",backend,INV,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,BE-INV-001,"FR-INV-002, FR-INV-005; UC-INV-02",@akmal,@naufaldi,S3,"backend, inv, core",feature/be-inv-006-get-stok-riwayat-movement-low-stock-stok,,"- [ ] Filter ingredient, tipe, tanggal dengan paginasi
+- [ ] Low stock memakai min_stock override outlet; stok minus tampil terpisah"
+FE-INV-001,[FE-INV-001] Halaman stok + badge low stock/minus,frontend,INV,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"BE-INV-006, FE-AUTH-003",SCR-INV-01,@akmal,@naufaldi,S3,"frontend, inv, core",feature/fe-inv-001-halaman-stok-badge-low-stock-minus,,"- [ ] Badge low stock dan minus berbeda dan menonjol
+- [ ] State empty/loading/error ada"
+FE-INV-004,[FE-INV-004] Form & daftar waste,frontend,INV,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,BE-INV-005,SCR-INV-04,@akmal,@naufaldi,S3,"frontend, inv, core",feature/fe-inv-004-form-daftar-waste,,"- [ ] Catatan wajib saat alasan OTHER
+- [ ] Nilai biaya disembunyikan untuk Kitchen"
+BE-ENG-003,[BE-ENG-003] Kebijakan stok minus: stock_shortage di respons dan audit,backend,ENG,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,BE-ENG-002,FR-ENG-002; BR-011,@akmal,@naufaldi,S3,"backend, eng, core",feature/be-eng-003-kebijakan-stok-minus-stock-shortage-di-r,,"- [ ] allow_negative_stock = true: bayar sukses dan stock_shortage terisi
+- [ ] false: 422 INSUFFICIENT_STOCK dengan details.ingredients"
+BE-ENG-004,[BE-ENG-004] Jalur restock refund (movement RETURN dari movement SALE order),backend,ENG,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,BE-ENG-002,FR-RFD-001; BR-012,@akmal,@naufaldi,S3,"backend, eng, core",feature/be-eng-004-jalur-restock-refund-movement-return-dar,,"- [ ] Restock membuat RETURN positif per bahan dengan reference REFUND:id
+- [ ] Tanpa restock tidak ada movement baru"
+INT-ENG-001,[INT-ENG-001] Integration test Sale → Payment → Recipe → Movement → Balance,integration,ENG,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"BE-PAY-003, BE-ENG-002",NFR-DATA-001/002,@akmal,@naufaldi,S3,"integration, eng, core",feature/int-eng-001-integration-test-sale-payment-recipe-mov,,"- [ ] balance = SUM(movements) untuk semua bahan pasca skenario
+- [ ] Skenario lengkap order→bayar→refund restock lulus"
+FE-PWA-001,"[FE-PWA-001] Manifest + service worker (vite-plugin-pwa), cache aset statis saja",frontend,PWA,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,FE-ORD-001,FR-PWA-001; F-17,@akmal,@naufaldi,S3,"frontend, pwa, core",feature/fe-pwa-001-manifest-service-worker-vite-plugin-pwa,,"- [ ] Installable (Lighthouse PWA lulus)
+- [ ] Respons API tidak pernah di-cache service worker"
+FE-REC-001,[FE-REC-001] Editor recipe di form produk + preview HPP,frontend,REC,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"BE-REC-002, FE-CAT-002",SCR-CAT-02; UC-REC-01,@akmal,@naufaldi,S4,"frontend, rec, core",feature/fe-rec-001-editor-recipe-di-form-produk-preview-hpp,,"- [ ] Satuan input memakai base unit bahan
+- [ ] Preview HPP disembunyikan untuk non-Owner/Manager"
+FE-INV-003,[FE-INV-003] Form opening stock & adjustment,frontend,INV,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"BE-INV-003, BE-INV-004",SCR-INV-03,@akmal,@naufaldi,S4,"frontend, inv, core",feature/fe-inv-003-form-opening-stock-adjustment,,"- [ ] Alasan wajib tampil pada adjustment
+- [ ] Error stok kurang menampilkan pesan SRS"
+TEST-INV-001,"[TEST-INV-001] Unit test StockService: konkurensi, minus, idempotensi, presisi desimal",testing,INV,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,BE-INV-002,NFR-DATA-001,@akmal,@naufaldi,S4,"testing, inv, core",feature/test-inv-001-unit-test-stockservice-konkurensi-minus,,"- [ ] 20 apply paralel pada bahan sama: balance = SUM(movements)
+- [ ] Presisi DECIMAL(18,4) terjaga"
+TEST-INV-002,"[TEST-INV-002] Feature test opening, adjustment, waste, stok",testing,INV,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"BE-INV-005, BE-INV-006",FR-INV-001…005,@akmal,@naufaldi,S4,"testing, inv, core",feature/test-inv-002-feature-test-opening-adjustment-waste-st,,"- [ ] Semua baris tabel validasi FR-INV-003/004 diuji
+- [ ] Permission Kitchen/Inventory sesuai matriks"
+TEST-E2E-001,[TEST-E2E-001] E2E Playwright: register → menu → recipe → shift → order → bayar → stok turun → close shift,testing,E2E,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"FE-PAY-002, INT-ENG-001, FE-SHF-003",F-01…F-10,@akmal,@naufaldi,S4,"testing, e2e, core",feature/test-e2e-001-e2e-playwright-register-menu-recipe-shif,,"- [ ] Alur utama lulus di staging dan CI
+- [ ] Stok setelah bayar sesuai recipe"
+TEST-E2E-002,[TEST-E2E-002] E2E inventory: opening → purchase receive → adjustment → waste,testing,E2E,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"FE-PUR-003, FE-INV-004","F-11, F-12, F-20",@akmal,@naufaldi,S4,"testing, e2e, core",feature/test-e2e-002-e2e-inventory-opening-purchase-receive-a,,"- [ ] Stok dan last_cost berubah sesuai purchase
+- [ ] Movement tercatat di riwayat"
+TEST-SEC-001,"[TEST-SEC-001] Checklist keamanan: tenant, throttling, CORS/CSRF, mass assignment, upload",testing,SEC,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"TEST-AUTH-001, BE-PAY-002",NFR-SEC-001…007,@akmal,@naufaldi,S4,"testing, sec, core",feature/test-sec-001-checklist-keamanan-tenant-throttling-cor,,"- [ ] Semua butir checklist lulus atau punya tiket perbaikan
+- [ ] Webhook/gateway ditandai out of scope Phase 1"
+TEST-REC-001,"[TEST-REC-001] Test recipe (versioning, validasi, HPP)",testing,REC,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,BE-REC-002,"FR-REC-001, FR-REC-003",@akmal,@naufaldi,S5,"testing, rec, core",feature/test-rec-001-test-recipe-versioning-validasi-hpp,,"- [ ] Versioning dan 1 aktif teruji (termasuk constraint DB)
+- [ ] Perhitungan HPP half-up sesuai vektor uji"
+FE-INV-002,[FE-INV-002] Halaman riwayat movement,frontend,INV,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,BE-INV-006,SCR-INV-02,@akmal,@naufaldi,S5,"frontend, inv, core",feature/fe-inv-002-halaman-riwayat-movement,,"- [ ] Filter tipe/tanggal bekerja
+- [ ] Tidak ada aksi ubah/hapus movement"
+BE-ENG-005,[BE-ENG-005] GET /orders/{id}/stock-trace,backend,ENG,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,BE-ENG-002,FR-ENG-003,@akmal,@naufaldi,S5,"backend, eng, core",feature/be-eng-005-get-orders-id-stock-trace,,"- [ ] Menampilkan movement SALE dan RETURN milik order
+- [ ] Butuh inventory.view; order tenant lain 404"
+TEST-ENG-001,"[TEST-ENG-001] Edge case: tanpa recipe, recipe diubah setelah jual, 2 order paralel",testing,ENG,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,INT-ENG-001,BR-013,@akmal,@naufaldi,S5,"testing, eng, core",feature/test-eng-001-edge-case-tanpa-recipe-recipe-diubah-set,,"- [ ] Recipe versi baru tidak mengubah movement order lama
+- [ ] Produk tanpa recipe tampil di laporan no recipe"
+FE-ENG-001,[FE-ENG-001] Indikator stok menipis/habis di layar POS,frontend,ENG,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,"BE-ENG-003, FE-ORD-002",SCR-POS-01,@akmal,@naufaldi,S5,"frontend, eng, core",feature/fe-eng-001-indikator-stok-menipis-habis-di-layar-po,,"- [ ] Indikator tampil tanpa memblokir penjualan
+- [ ] Data berasal dari endpoint stok (tanpa HPP)"
+TEST-RPT-001,"[TEST-RPT-001] Test laporan sales & payment: angka vs fixture, isolasi tenant, timezone",testing,RPT,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,BE-RPT-003,FR-RPT-001…005,@akmal,@naufaldi,S5,"testing, rpt, core",feature/test-rpt-001-test-laporan-sales-payment-angka-vs-fixt,,"- [ ] Business date lintas tengah malam benar
+- [ ] Isolasi tenant pada semua endpoint laporan"
+FE-PWA-002,[FE-PWA-002] Banner offline + aksi tulis ditolak + retry aman (key sama),frontend,PWA,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,"FE-PWA-001, BE-PAY-002",FR-PWA-001,@akmal,@naufaldi,S5,"frontend, pwa, core",feature/fe-pwa-002-banner-offline-aksi-tulis-ditolak-retry,,"- [ ] Offline menampilkan banner dan menolak aksi tulis
+- [ ] Retry bayar memakai Idempotency-Key yang sama"
+DB-SEED-001,"[DB-SEED-001] Seeder demo (business, outlet, menu, recipe, stok, supplier)",database,SEED,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,"BE-REC-001, BE-INV-003, BE-PUR-001",TD §8,@akmal,@naufaldi,S5,"database, seed, core",feature/db-seed-001-seeder-demo-business-outlet-menu-recipe,,"- [ ] Satu perintah menghasilkan data demo siap dipakai UAT
+- [ ] Aman dijalankan ulang di staging"
+TEST-PERF-001,[TEST-PERF-001] Load test 20 pembayaran paralel bahan sama + cek balance = SUM(movements),testing,PERF,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,INT-ENG-001,"NFR-PERF-003, NFR-PERF-004",@akmal,@naufaldi,S5,"testing, perf, core",feature/test-perf-001-load-test-20-pembayaran-paralel-bahan-sa,,"- [ ] p95 bayar + potong stok < 800 ms (order ≤ 10 item)
+- [ ] 0 deadlock dan balance = SUM(movements)"
+BE-REC-003,[BE-REC-003] CRUD recipe per modifier option (F-18),backend,REC,FASE 2 — RILIS 1.1 (Jan 2027),S,todo,"DB-REC-001, BE-CAT-004, BE-ING-001",FR-REC-002; UC-REC-02,@akmal,@naufaldi,R1.1,"backend, rec, r1.1",feature/be-rec-003-crud-recipe-per-modifier-option-f-18,,"- [ ] Qty > 0 dalam base unit; perubahan tercatat audit
+- [ ] Hanya recipes.manage yang boleh mengubah"
+FE-REC-002,[FE-REC-002] Editor recipe modifier option (F-18),frontend,REC,FASE 2 — RILIS 1.1 (Jan 2027),S,todo,"BE-REC-003, FE-CAT-003",SCR-CAT-03,@akmal,@naufaldi,R1.1,"frontend, rec, r1.1",feature/fe-rec-002-editor-recipe-modifier-option-f-18,,"- [ ] Editor muncul di UI modifier option
+- [ ] Validasi qty dan bahan ganda sama dengan recipe produk"
+FE-REC-003,[FE-REC-003] Tampilan recipe read-only untuk Inventory/Kitchen tanpa HPP,frontend,REC,FASE 2 — RILIS 1.1 (Jan 2027),XS,todo,"BE-REC-001, FE-AUTH-003",UC-REC-03,@akmal,@naufaldi,R1.1,"frontend, rec, r1.1",feature/fe-rec-003-tampilan-recipe-read-only-untuk-inventor,,"- [ ] Role tanpa recipes.manage tidak melihat tombol ubah
+- [ ] HPP tidak ada di respons maupun UI"
+DB-INV-002,"[DB-INV-002] Migrasi stock_opnames, stock_opname_items (UNIQUE parsial IN_PROGRESS)",database,INV,FASE 2 — RILIS 1.1 (Jan 2027),S,todo,DB-INV-001,ERD §3.3; BR-017,@akmal,@naufaldi,R1.1,"database, inv, r1.1",feature/db-inv-002-migrasi-stock-opnames-stock-opname-items,,"- [ ] Hanya 1 opname IN_PROGRESS per outlet di level DB
+- [ ] UNIQUE (opname_id, ingredient_id)"
+BE-INV-007,"[BE-INV-007] Opname: mulai (snapshot), input hitungan, batalkan",backend,INV,FASE 2 — RILIS 1.1 (Jan 2027),M,todo,"DB-INV-002, BE-INV-004",FR-INV-006; UC-INV-05; SEQ-INV-02,@akmal,@naufaldi,R1.1,"backend, inv, r1.1",feature/be-inv-007-opname-mulai-snapshot-input-hitungan-bat,,"- [ ] Mulai saat ada opname berjalan 409 OPNAME_IN_PROGRESS
+- [ ] Hitungan negatif 422"
+BE-INV-008,[BE-INV-008] Opname submit: selisih vs snapshot diterapkan ke stok live (urut ingredient_id),backend,INV,FASE 2 — RILIS 1.1 (Jan 2027),S,todo,BE-INV-007,BR-017; STM-OPNAME,@akmal,@naufaldi,R1.1,"backend, inv, r1.1",feature/be-inv-008-opname-submit-selisih-vs-snapshot-ditera,,"- [ ] Penjualan selama penghitungan tidak hilang (selisih dihitung terhadap snapshot)
+- [ ] Submit pada opname bukan IN_PROGRESS 409 OPNAME_NOT_ACTIVE"
+FE-INV-005,"[FE-INV-005] UI opname (mulai, input hitungan, review selisih, submit)",frontend,INV,FASE 2 — RILIS 1.1 (Jan 2027),M,todo,BE-INV-008,SCR-INV-05,@akmal,@naufaldi,R1.1,"frontend, inv, r1.1",feature/fe-inv-005-ui-opname-mulai-input-hitungan-review-se,,"- [ ] Layar nyaman di HP (target sentuh ≥ 44 px)
+- [ ] Review selisih tampil sebelum submit"
+TEST-INV-003,"[TEST-INV-003] Test opname (snapshot, selisih, konkurensi dengan penjualan)",testing,INV,FASE 2 — RILIS 1.1 (Jan 2027),S,todo,BE-INV-008,FR-INV-006,@akmal,@naufaldi,R1.1,"testing, inv, r1.1",feature/test-inv-003-test-opname-snapshot-selisih-konkurensi,,"- [ ] Skenario penjualan selama opname lulus
+- [ ] Submit ganda ditolak"
+BE-ENG-006,[BE-ENG-006] Pemakaian bahan modifier option ditambahkan ke agregat (F-18),backend,ENG,FASE 2 — RILIS 1.1 (Jan 2027),S,todo,"BE-ENG-001, BE-REC-003",FR-REC-002; FR-ENG-001,@akmal,@naufaldi,R1.1,"backend, eng, r1.1",feature/be-eng-006-pemakaian-bahan-modifier-option-ditambah,,"- [ ] Pemakaian modifier dihitung dari recipe option aktif saat pembayaran
+- [ ] Modifier tanpa recipe tidak memotong stok"
+DOC-001,[DOC-001] Dokumentasi API (OpenAPI/Scribe),docs,,FASE 2 — RILIS 1.1 (Jan 2027),M,todo,"BE-RPT-003, BE-PUR-004",SDD §4,@akmal,@naufaldi,R1.1,"docs, setup, r1.1",feature/doc-001-dokumentasi-api-openapi-scribe,,"- [ ] Semua endpoint Phase 1 terdokumentasi dengan contoh
+- [ ] Dokumen dapat diakses di staging"
+DOC-002,"[DOC-002] README + runbook dev (Laragon, Supabase, queue worker)",docs,,FASE 2 — RILIS 1.1 (Jan 2027),S,todo,SETUP-002,TD §6,@akmal,@naufaldi,R1.1,"docs, setup, r1.1",feature/doc-002-readme-runbook-dev-laragon-supabase-queu,,"- [ ] Developer baru bisa menjalankan proyek dari README tanpa bertanya
+- [ ] Runbook queue worker dan scheduler tersedia"

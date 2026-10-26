@@ -1,0 +1,101 @@
+id,title,type,module,phase,estimate,status,depends_on,references,assignee,reviewer,sprint,labels,branch,pr,acceptance_criteria
+SETUP-006,"[SETUP-006] Skeleton frontend: Vue 3 + Vite + TS, Vue Router, API client (CSRF, 401/419/422), Pinia, Tailwind, toast/dialog",setup,,FASE 0 — SETUP & INFRASTRUKTUR (S1),M,todo,SETUP-001,TD §3; ADR-001,@naufaldi,@ongki,S1,"setup, core",feature/setup-006-skeleton-frontend-vue-3-vite-ts-vue-rout,,"- [ ] API client otomatis mengambil `/sanctum/csrf-cookie` dan menyertakan `X-Outlet-Id`
+- [ ] 401 mengarahkan ke login; 422 memetakan `details` ke field form"
+DB-CAT-001,"[DB-CAT-001] Migrasi categories, products, modifier_groups, modifier_options, product_modifier_groups",database,CAT,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,DB-TEN-002,ERD §3.2,@naufaldi,@ongki,S1,"database, cat, core",feature/db-cat-001-migrasi-categories-products-modifier-gro,,"- [ ] UNIQUE parsial SKU dan nama sesuai ERD
+- [ ] products tidak punya kolom cost_price"
+BE-CAT-001,"[BE-CAT-001] CRUD category (status, sort order)",backend,CAT,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,"DB-CAT-001, BE-RBAC-001",FR-CAT-001; UC-CAT-01,@naufaldi,@ongki,S1,"backend, cat, core",feature/be-cat-001-crud-category-status-sort-order,,"- [ ] Nama unik per business; INACTIVE menyembunyikan produknya dari POS
+- [ ] Soft delete, bukan hard delete"
+BE-CAT-002,"[BE-CAT-002] CRUD product + upload gambar ke Supabase Storage (maks 2 MB, jpg/png/webp)",backend,CAT,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,BE-CAT-001,FR-CAT-002; UC-CAT-01; SEQ-CAT-01,@naufaldi,@ongki,S1,"backend, cat, core",feature/be-cat-002-crud-product-upload-gambar-ke-supabase-s,,"- [ ] SKU ganda 422 ""SKU sudah digunakan.""; harga non-bulat/negatif 422
+- [ ] Gambar >2 MB atau format salah 422 dengan pesan SRS"
+DB-SHF-001,"[DB-SHF-001] Migrasi shifts, cash_movements (+ UNIQUE parsial 1 OPEN per kasir per outlet)",database,SHF,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,DB-TEN-002,ERD §3.4; BR-002,@naufaldi,@ongki,S1,"database, shf, core",feature/db-shf-001-migrasi-shifts-cash-movements-unique-par,,"- [ ] Shift OPEN kedua milik kasir yang sama di outlet sama ditolak DB
+- [ ] cash_movements append-only (trigger)"
+BE-USER-002,"[BE-USER-002] CRUD outlet + pengaturan (pajak, service, minus, diskon kasir, rounding, struk)",backend,USER,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"BE-RBAC-001, BE-AUD-001","FR-BIZ-002, FR-BIZ-003; UC-BIZ-02",@naufaldi,@ongki,S2,"backend, user, core",feature/be-user-002-crud-outlet-pengaturan-pajak-service-min,,"- [ ] Manager hanya boleh ubah pajak, service, struk; rounding_increment hanya Owner
+- [ ] Kode outlet tidak bisa diubah setelah ada order; perubahan setting tercatat audit before/after"
+FE-AUTH-001,[FE-AUTH-001] Halaman Login,frontend,AUTH,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"BE-AUTH-002, SETUP-006",UC-AUTH-02; SCR-AUTH-01,@naufaldi,@ongki,S2,"frontend, auth, core",feature/fe-auth-001-halaman-login,,"- [ ] Pesan error mengikuti SRS dan tidak membocorkan email atau password yang salah
+- [ ] Akun terkunci menampilkan pesan 423 dan state loading/error ada"
+FE-AUTH-003,"[FE-AUTH-003] Auth store (Pinia), route guard (Vue Router), direktif v-can + composable useCan, outlet switcher",frontend,AUTH,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"FE-AUTH-001, BE-AUTH-004",FR-AUTH-004; ADR-001,@naufaldi,@ongki,S2,"frontend, auth, core",feature/fe-auth-003-auth-store-pinia-route-guard-vue-router,,"- [ ] Halaman terproteksi mengarahkan ke login bila 401
+- [ ] v-can menyembunyikan UI sesuai permission dan scope; backend tetap menegakkan"
+BE-CAT-004,[BE-CAT-004] CRUD modifier group & option + pasang ke produk,backend,CAT,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,BE-CAT-002,FR-CAT-003; UC-CAT-02; BR-030,@naufaldi,@ongki,S2,"backend, cat, core",feature/be-cat-004-crud-modifier-group-option-pasang-ke-pro,,"- [ ] min_select > max_select ditolak dengan pesan SRS
+- [ ] SINGLE hanya memperbolehkan satu pilihan; option INACTIVE tidak bisa dipilih"
+BE-CAT-005,[BE-CAT-005] GET /pos/catalog dengan cache + invalidasi saat katalog berubah,backend,CAT,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,BE-CAT-004,FR-CAT-004; SEQ-CAT-01,@naufaldi,@ongki,S2,"backend, cat, core",feature/be-cat-005-get-pos-catalog-dengan-cache-invalidasi,,"- [ ] Respons tidak memuat HPP
+- [ ] Perubahan produk/kategori/modifier membatalkan cache"
+BE-SHF-001,"[BE-SHF-001] Open shift (opening cash, business_date menurut timezone outlet)",backend,SHF,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"DB-SHF-001, BE-RBAC-001",FR-SHF-001; UC-SHF-01; SEQ-SHF-01,@naufaldi,@ongki,S2,"backend, shf, core",feature/be-shf-001-open-shift-opening-cash-business-date-me,,"- [ ] Sudah ada shift OPEN 409 SHIFT_ALREADY_OPEN
+- [ ] Opening cash negatif 422; audit SHIFT_OPENED"
+BE-SHF-005,[BE-SHF-005] GET /shifts/current + open_hours_exceeded + middleware shift.open,backend,SHF,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,BE-SHF-001,FR-SHF-004; BR-026,@naufaldi,@ongki,S2,"backend, shf, core",feature/be-shf-005-get-shifts-current-open-hours-exceeded-m,,"- [ ] open_hours_exceeded true bila terbuka > 24 jam
+- [ ] Order tanpa shift OPEN ditolak 409 NO_OPEN_SHIFT"
+DB-PUR-001,"[DB-PUR-001] Migrasi suppliers, purchases, purchase_items, document_sequences",database,PUR,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"DB-ING-001, DB-TEN-002",ERD §3.6; BR-045…050,@naufaldi,@ongki,S2,"database, pur, core",feature/db-pur-001-migrasi-suppliers-purchases-purchase-ite,,"- [ ] purchases UNIQUE (outlet_id, code); status CHECK DRAFT/RECEIVED/CANCELLED
+- [ ] document_sequences PK (outlet_id, doc_type, seq_date) dengan lock FOR UPDATE"
+BE-PUR-001,"[BE-PUR-001] CRUD supplier (soft delete, INACTIVE tidak bisa dipilih)",backend,PUR,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,"DB-PUR-001, BE-RBAC-001",FR-PUR-001; UC-PUR-01,@naufaldi,@ongki,S2,"backend, pur, core",feature/be-pur-001-crud-supplier-soft-delete-inactive-tidak,,"- [ ] Supplier INACTIVE ditolak saat membuat purchase
+- [ ] Permission suppliers.* sesuai matriks (Owner, Manager, Inventory)"
+BE-USER-001,"[BE-USER-001] CRUD user + assign role & outlet + nonaktifkan (aturan Manager limited), audit",backend,USER,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"BE-RBAC-001, BE-AUD-001",FR-USER-001; UC-USER-01; BR-024,@naufaldi,@ongki,S3,"backend, user, core",feature/be-user-001-crud-user-assign-role-outlet-nonaktifkan,,"- [ ] Manager yang memilih role di luar Cashier/Inventory/Kitchen mendapat 403
+- [ ] Owner terakhir tidak bisa dinonaktifkan atau diganti role"
+BE-SHF-003,[BE-SHF-003] ShiftSummaryService: Expected Cash + non_cash per metode,backend,SHF,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"BE-SHF-001, DB-PAY-001","FR-SHF-003; BR-004, BR-042",@naufaldi,@ongki,S3,"backend, shf, core",feature/be-shf-003-shiftsummaryservice-expected-cash-non-ca,,"- [ ] Expected = opening + cash sales (bersih kembalian) + in − out − cash refund
+- [ ] Pembayaran non-tunai tampil di non_cash dan tidak masuk Expected Cash"
+BE-SHF-004,"[BE-SHF-004] Close shift: tolak bila ada order DRAFT/PENDING, hitung selisih, audit",backend,SHF,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"BE-SHF-003, BE-ORD-005",FR-SHF-003; UC-SHF-03; BR-003,@naufaldi,@ongki,S3,"backend, shf, core",feature/be-shf-004-close-shift-tolak-bila-ada-order-draft-p,,"- [ ] Ada order pending 409 SHIFT_HAS_PENDING_ORDERS dengan jumlah order
+- [ ] Sukses menyimpan expected, actual, difference; shift CLOSED tidak menerima transaksi"
+FE-SHF-001,[FE-SHF-001] Dialog open shift (+ banner > 24 jam),frontend,SHF,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,"BE-SHF-005, FE-AUTH-003",SCR-SHF-01,@naufaldi,@ongki,S3,"frontend, shf, core",feature/fe-shf-001-dialog-open-shift-banner-24-jam,,"- [ ] Banner peringatan tampil saat open_hours_exceeded
+- [ ] Tidak bisa masuk layar POS tanpa shift OPEN"
+BE-PUR-002,"[BE-PUR-002] Purchase DRAFT: buat/ubah item (satuan beli + faktor konversi), nomor PO",backend,PUR,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"BE-PUR-001, BE-ING-001, BE-INV-003","FR-PUR-002; UC-PUR-02; BR-046, BR-049",@naufaldi,@ongki,S3,"backend, pur, core",feature/be-pur-002-purchase-draft-buat-ubah-item-satuan-bel,,"- [ ] quantity_base = quantity × faktor (kg→g, L→ml = 1000)
+- [ ] Purchase RECEIVED tidak bisa diubah 409 INVALID_STATE_TRANSITION"
+BE-PUR-003,"[BE-PUR-003] Receive purchase: movement PURCHASE, update last_cost, atomik dan idempoten",backend,PUR,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"BE-PUR-002, BE-INV-002","FR-PUR-003; UC-PUR-03; SEQ-PUR-01; BR-045, BR-047",@naufaldi,@ongki,S3,"backend, pur, core",feature/be-pur-003-receive-purchase-movement-purchase-updat,,"- [ ] Receive menambah stok base unit dan last_cost = harga per satuan beli ÷ faktor
+- [ ] Receive ganda tidak menggandakan movement (409 atau replay)"
+FE-PUR-001,[FE-PUR-001] Halaman supplier,frontend,PUR,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,"BE-PUR-001, FE-AUTH-003",SCR-PUR-01,@naufaldi,@ongki,S3,"frontend, pur, core",feature/fe-pur-001-halaman-supplier,,"- [ ] CRUD supplier dengan state loading/empty/error
+- [ ] Aksi dibatasi v-can suppliers.*"
+FE-PUR-002,"[FE-PUR-002] Form & daftar purchase (satuan beli, konversi tampil)",frontend,PUR,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"BE-PUR-002, FE-PUR-001",SCR-PUR-02,@naufaldi,@ongki,S3,"frontend, pur, core",feature/fe-pur-002-form-daftar-purchase-satuan-beli-konvers,,"- [ ] Konversi ke base unit tampil sebelum simpan
+- [ ] Purchase RECEIVED tampil read-only"
+BE-RPT-001,"[BE-RPT-001] Laporan sales (gross, diskon, service, pajak, pembulatan, net, COGS, gross profit, refund)",backend,RPT,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"BE-PAY-002, BE-ORD-007",FR-RPT-001; UC-RPT-01,@naufaldi,@ongki,S3,"backend, rpt, core",feature/be-rpt-001-laporan-sales-gross-diskon-service-pajak,,"- [ ] Angka cocok dengan fixture; REFUNDED dipisah; pembulatan baris terpisah
+- [ ] Periode memakai business_date; outlet di luar akses 403"
+FE-USER-001,"[FE-USER-001] Halaman manajemen user (list, form, role, outlet)",frontend,USER,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"BE-USER-001, FE-AUTH-003",UC-USER-01; SCR-USER-01,@naufaldi,@ongki,S4,"frontend, user, core",feature/fe-user-001-halaman-manajemen-user-list-form-role-ou,,"- [ ] Dropdown role hanya menampilkan role yang boleh dipilih pelaku (GET /roles)
+- [ ] State empty, loading, error tersedia"
+FE-CAT-002,[FE-CAT-002] Halaman list + form produk (upload gambar),frontend,CAT,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"BE-CAT-002, FE-AUTH-003",SCR-CAT-02,@naufaldi,@ongki,S4,"frontend, cat, core",feature/fe-cat-002-halaman-list-form-produk-upload-gambar,,"- [ ] Error 422 tampil per field
+- [ ] Preview gambar dan batas 2 MB divalidasi sebelum upload"
+FE-CAT-003,[FE-CAT-003] UI manajemen modifier,frontend,CAT,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"BE-CAT-004, FE-CAT-002",SCR-CAT-03,@naufaldi,@ongki,S4,"frontend, cat, core",feature/fe-cat-003-ui-manajemen-modifier,,"- [ ] Group, option, dan pemasangan ke produk dapat dikelola
+- [ ] Aturan min/max tampil jelas"
+BE-SHF-002,"[BE-SHF-002] Cash in / cash out (alasan wajib, cash.manage)",backend,SHF,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,BE-SHF-001,FR-SHF-002; UC-SHF-02,@naufaldi,@ongki,S4,"backend, shf, core",feature/be-shf-002-cash-in-cash-out-alasan-wajib-cash-manag,,"- [ ] Alasan kosong 422; tanpa shift OPEN 409
+- [ ] Tercatat append-only dan masuk audit"
+FE-SHF-003,[FE-SHF-003] Wizard close shift + ringkasan (cetak),frontend,SHF,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,BE-SHF-004,SCR-SHF-03,@naufaldi,@ongki,S4,"frontend, shf, core",feature/fe-shf-003-wizard-close-shift-ringkasan-cetak,,"- [ ] Expected Cash tampil sebelum input uang fisik
+- [ ] Pesan error order pending menampilkan jumlah"
+TEST-SHF-001,"[TEST-SHF-001] Test shift: open ganda, selisih kas, close dengan order pending, efek refund",testing,SHF,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"BE-SHF-004, BE-PAY-005",FR-SHF-001…004,@naufaldi,@ongki,S4,"testing, shf, core",feature/test-shf-001-test-shift-open-ganda-selisih-kas-close,,"- [ ] Formula Expected Cash diuji dengan data campuran (cash, QRIS, refund)
+- [ ] Konkurensi open shift ganda lulus"
+BE-PUR-004,"[BE-PUR-004] GET daftar & detail purchase (filter status, supplier, tanggal)",backend,PUR,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,BE-PUR-002,FR-PUR-004; UC-PUR-04,@naufaldi,@ongki,S4,"backend, pur, core",feature/be-pur-004-get-daftar-detail-purchase-filter-status,,"- [ ] Filter dan paginasi bekerja; data tenant lain 404
+- [ ] Permission purchases.view"
+FE-PUR-003,"[FE-PUR-003] Alur terima barang (konfirmasi, hasil stok baru)",frontend,PUR,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"BE-PUR-003, FE-PUR-002",SCR-PUR-03,@naufaldi,@ongki,S4,"frontend, pur, core",feature/fe-pur-003-alur-terima-barang-konfirmasi-hasil-stok,,"- [ ] Konfirmasi menampilkan ringkasan stok sebelum dan sesudah
+- [ ] Klik ganda aman"
+BE-RPT-003,[BE-RPT-003] Laporan payment per metode,backend,RPT,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,BE-RPT-001,FR-RPT-003,@naufaldi,@ongki,S4,"backend, rpt, core",feature/be-rpt-003-laporan-payment-per-metode,,"- [ ] Total Cash dan QRIS cocok dengan payments
+- [ ] Cashier hanya ringkasan miliknya"
+BE-AUTH-003,[BE-AUTH-003] GET/PUT /me dan PUT /me/password,backend,AUTH,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,BE-AUTH-002,FR-AUTH-003; UC-AUTH-03,@naufaldi,@ongki,S5,"backend, auth, core",feature/be-auth-003-get-put-me-dan-put-me-password,,"- [ ] Password lama salah mengembalikan 422 ""Password lama tidak sesuai.""
+- [ ] Ganti password mengakhiri sesi lain milik user"
+BE-USER-003,[BE-USER-003] GET/PUT /business (profil + license tanpa enforcement),backend,USER,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",XS,todo,BE-RBAC-001,FR-BIZ-001; UC-BIZ-01,@naufaldi,@ongki,S5,"backend, user, core",feature/be-user-003-get-put-business-profil-license-tanpa-en,,"- [ ] Hanya Owner yang dapat mengubah; perubahan tercatat audit
+- [ ] license_plan dan license_valid_until tersimpan tanpa memblokir fitur"
+FE-AUTH-002,[FE-AUTH-002] Halaman Register Business,frontend,AUTH,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,"BE-AUTH-001, SETUP-006",UC-AUTH-01; SCR-AUTH-02,@naufaldi,@ongki,S5,"frontend, auth, core",feature/fe-auth-002-halaman-register-business,,"- [ ] Validasi per field menampilkan pesan SRS
+- [ ] Sukses mengarahkan ke login/onboarding"
+FE-USER-002,[FE-USER-002] Halaman pengaturan outlet dan profil business,frontend,USER,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,"BE-USER-002, BE-USER-003, FE-AUTH-003",UC-BIZ-02; SCR-BIZ-01,@naufaldi,@ongki,S5,"frontend, user, core",feature/fe-user-002-halaman-pengaturan-outlet-dan-profil-bus,,"- [ ] Field di luar hak Manager tampil nonaktif
+- [ ] Tarif di luar 0–100 menampilkan pesan SRS"
+BE-CAT-003,[BE-CAT-003] Audit perubahan harga + guard produk INACTIVE + soft delete,backend,CAT,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,"BE-CAT-002, BE-AUD-001","FR-CAT-002; BR-018, BR-029",@naufaldi,@ongki,S5,"backend, cat, core",feature/be-cat-003-audit-perubahan-harga-guard-produk-inact,,"- [ ] Perubahan selling_price menulis PRODUCT_PRICE_CHANGED (before/after)
+- [ ] Produk yang pernah dipakai transaksi tidak bisa dihapus permanen"
+FE-CAT-001,[FE-CAT-001] Halaman kategori,frontend,CAT,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,"BE-CAT-001, FE-AUTH-003",SCR-CAT-01,@naufaldi,@ongki,S5,"frontend, cat, core",feature/fe-cat-001-halaman-kategori,,"- [ ] CRUD kategori jalan dengan state loading/empty/error
+- [ ] Aksi dibatasi v-can products.*"
+FE-SHF-002,[FE-SHF-002] Dialog cash in / cash out,frontend,SHF,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",S,todo,BE-SHF-002,SCR-SHF-02,@naufaldi,@ongki,S5,"frontend, shf, core",feature/fe-shf-002-dialog-cash-in-cash-out,,"- [ ] Alasan wajib divalidasi
+- [ ] Saldo ringkasan ter-refresh setelah simpan"
+TEST-PUR-001,"[TEST-PUR-001] Test purchasing: konversi, last_cost, idempotensi, permission",testing,PUR,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,BE-PUR-003,FR-PUR-001…004,@naufaldi,@ongki,S5,"testing, pur, core",feature/test-pur-001-test-purchasing-konversi-last-cost-idemp,,"- [ ] Semua BR-045…050 punya test
+- [ ] balance = SUM(movements) tetap benar setelah receive"
+FE-RPT-001,[FE-RPT-001] Halaman laporan sales & payment,frontend,RPT,"FASE 1 — CORE (S1–S5, target 29–30 Des 2026)",M,todo,"BE-RPT-003, FE-AUTH-003",SCR-RPT-01,@naufaldi,@ongki,S5,"frontend, rpt, core",feature/fe-rpt-001-halaman-laporan-sales-payment,,"- [ ] Filter tanggal/outlet/kasir/metode
+- [ ] State empty dan loading ada"
+BE-AUD-002,"[BE-AUD-002] GET /audit-logs + filter (tanggal, user, aksi, resource)",backend,AUD,FASE 2 — RILIS 1.1 (Jan 2027),S,todo,"BE-AUD-001, BE-RBAC-001",FR-AUD-002; UC-AUD-01,@naufaldi,@ongki,R1.1,"backend, aud, r1.1",feature/be-aud-002-get-audit-logs-filter-tanggal-user-aksi,,"- [ ] Filter tanggal, user, aksi, resource bekerja
+- [ ] Manager hanya melihat outlet miliknya"
+FE-AUD-001,[FE-AUD-001] Halaman audit log,frontend,AUD,FASE 2 — RILIS 1.1 (Jan 2027),S,todo,"BE-AUD-002, FE-AUTH-003",UC-AUD-01; SCR-AUD-01,@naufaldi,@ongki,R1.1,"frontend, aud, r1.1",feature/fe-aud-001-halaman-audit-log,,"- [ ] Daftar memakai paginasi dan filter
+- [ ] Order/aksi sensitif menampilkan before/after"
+BE-PUR-005,[BE-PUR-005] Cancel purchase DRAFT + partial receive (purchase_receipts),backend,PUR,FASE 2 — RILIS 1.1 (Jan 2027),M,todo,BE-PUR-003,FR-PUR-005; UC-PUR-05,@naufaldi,@ongki,R1.1,"backend, pur, r1.1",feature/be-pur-005-cancel-purchase-draft-partial-receive-pu,,"- [ ] Cancel hanya DRAFT dengan alasan wajib
+- [ ] Partial receive memotong sisa dan status mengikuti jumlah diterima"
+BE-RPT-002,[BE-RPT-002] Laporan produk + daftar no recipe,backend,RPT,FASE 2 — RILIS 1.1 (Jan 2027),S,todo,BE-RPT-001,FR-RPT-002; BR-010,@naufaldi,@ongki,R1.1,"backend, rpt, r1.1",feature/be-rpt-002-laporan-produk-daftar-no-recipe,,"- [ ] Produk tanpa recipe aktif tampil di daftar
+- [ ] Revenue dan qty cocok dengan fixture"
+BE-RPT-004,"[BE-RPT-004] Laporan inventory (stok, movement per tipe, low stock, minus) + waste + pembelian",backend,RPT,FASE 2 — RILIS 1.1 (Jan 2027),M,todo,"BE-INV-006, BE-INV-005, BE-PUR-003",FR-RPT-004,@naufaldi,@ongki,R1.1,"backend, rpt, r1.1",feature/be-rpt-004-laporan-inventory-stok-movement-per-tipe,,"- [ ] Stok minus muncul pada laporan
+- [ ] Waste menampilkan biaya (Kitchen tanpa nilai)"
+BE-RPT-005,"[BE-RPT-005] Dashboard permission-aware (timezone outlet, cache TTL pendek)",backend,RPT,FASE 2 — RILIS 1.1 (Jan 2027),M,todo,"BE-RPT-001, BE-INV-006, BE-SHF-005",FR-RPT-005; UC-RPT-02,@naufaldi,@ongki,R1.1,"backend, rpt, r1.1",feature/be-rpt-005-dashboard-permission-aware-timezone-outl,,"- [ ] Widget sesuai permission; Cashier hanya data shift sendiri
+- [ ] Rata-rata order = net sales ÷ jumlah order"
+FE-RPT-002,"[FE-RPT-002] Halaman laporan produk, inventory, waste",frontend,RPT,FASE 2 — RILIS 1.1 (Jan 2027),M,todo,"BE-RPT-004, BE-RPT-002",SCR-RPT-02,@naufaldi,@ongki,R1.1,"frontend, rpt, r1.1",feature/fe-rpt-002-halaman-laporan-produk-inventory-waste,,"- [ ] Daftar no recipe dan stok minus menonjol
+- [ ] Nilai biaya disembunyikan sesuai role"
+FE-RPT-003,[FE-RPT-003] Dashboard,frontend,RPT,FASE 2 — RILIS 1.1 (Jan 2027),M,todo,BE-RPT-005,SCR-RPT-03,@naufaldi,@ongki,R1.1,"frontend, rpt, r1.1",feature/fe-rpt-003-dashboard,,"- [ ] Widget mengikuti respons permission
+- [ ] Polling/refresh tidak membebani (cache TTL)"
+BE-RPT-006,"[BE-RPT-006] Export CSV sales dan stock movement (stream, reports.export)",backend,RPT,FASE 2 — RILIS 1.1 (Jan 2027),S,todo,"BE-RPT-001, BE-INV-006",FR-RPT-006; UC-RPT-03,@naufaldi,@ongki,R1.1,"backend, rpt, r1.1",feature/be-rpt-006-export-csv-sales-dan-stock-movement-stre,,"- [ ] Filter sama dengan layar; hanya business/outlet user
+- [ ] Tanpa permission 403"
