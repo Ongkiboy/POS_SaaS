@@ -1,61 +1,75 @@
 # Task Breakdown — F&B POS & Inventory
-> **Versi:** 3.0 (Baseline final) | **Tanggal:** 2026-10-25 | **Mode tiket:** Tim (3 developer)
-> **Referensi:** PRD v3.0 · SRS v3.0 · Use Case v3.0 · SDD v3.0 · ERD v3.0 · UI/UX v3.0 · Technical Design v3.0 · Test Plan v3.0
-> **Total:** 148 tiket = **115,75 hari-orang** (core 126 tiket / 101,00 hari; rilis 1.1 22 tiket / 14,75 hari)
-> **Sumber tiket lengkap (AC, dependency, referensi):** `tickets/tickets.md` — ID tiket = ID task.
+
+> **Versi:** 3.0.2 | **Tanggal:** 2026-10-27 | **Mode tiket:** Tim (3 developer)
+**Referensi:** PRD v3.0 · SRS v3.0 · Use Case v3.0 · SDD v3.0 · ERD v3.0 · UI/UX v3.0 · Technical Design v3.0 · Test Plan v3.0
+**Total:** 148 tiket = **115,75 hari-orang** (core 126 tiket / 101,00 hari; rilis 1.1 22 tiket / 14,75 hari)
+**Sumber tiket lengkap (AC, dependency, referensi):** `tickets/tickets.md` — ID tiket = ID task.
+> 
 
 ---
 
 ## 1. Panduan
+
 ### Konvensi ID
+
 `[TIPE]-[MODUL]-[NOMOR]` · tipe: SETUP, BE, FE, DB, INT, TEST, DEPLOY, DOC (+ `DB-SEED-001` untuk data demo). Setiap task BE/FE menunjuk FR/UC/SEQ/SCR; setiap task fitur punya Test Reference (TC di Test Plan).
 
 ### Estimasi (maks 1 hari per tiket)
+
 | Label | Waktu | Hari-orang di rencana |
-|-------|-------|-----------------------|
+| --- | --- | --- |
 | XS | < 2 jam | 0,25 |
 | S | 2–4 jam | 0,5 |
 | M | 4–8 jam | 1 |
+
 Tidak ada tiket L/XL; pekerjaan besar sudah dipecah.
 
 ### Status
+
 `🔲 Todo` → `🔄 In Progress` → `👀 Review` → `✅ Done` | `❌ Blocked` (WIP limit: 1 tiket In Progress per orang)
 
 ---
 
 ## 2. Kapasitas dan Beban
+
 **Kapasitas** (26 Okt–30 Des 2026): 47 hari kerja (25 Des libur) × 3 dev × 75% produktif = **105,75 hari-orang**. Tiap dev: 35,25 hari tugas (7,5 per sprint 2 minggu; S5 = 5,25).
 
-| | Hari-orang |
-|---|---|
+|  | Hari-orang |
+| --- | --- |
 | Kapasitas | 105,75 |
 | Kebutuhan core | 101,00 |
 | **Margin core (tanpa buffer 20%)** | **4,75 (±4%)** |
 | Rilis 1.1 | 14,75 |
 
 > **Peringatan:** buffer 20% yang lazim tidak tersedia. Margin ±4,75 hari-orang ditutup dengan: (a) cut list §4, (b) 30 Des sebagai hari cadangan, (c) jalur kritis §3 dikerjakan lebih dulu. Estimasi belum dikalibrasi tim: **kalibrasi ulang di akhir S1** dan laporkan penyimpangan.
+> 
 
 ### Beban per developer (core)
+
 | Developer | Modul utama | Core (hari) | Rilis 1.1 (hari) |
-|-----------|-------------|-------------|------------------|
-| Ongki | Setup/infra, tenant, auth/RBAC (BE), audit, POS order, payment/refund, deploy | 35,50 | 1,00 |
-| Akmal | Ingredient, recipe, inventory, engine Sale→Inventory, PWA, seed, E2E/security/perf test | 33,25 | 6,75 |
+| --- | --- | --- | --- |
+| Ongki | Setup/infra, tenant, auth/RBAC (BE), audit, POS order, payment/refund, deploy | 36,00 | 1,00 |
+| Akmal | Ingredient, recipe, inventory, engine Sale→Inventory, PWA, seed, E2E/security/perf test | 32,75 | 6,75 |
 | Naufaldi | Katalog, user/outlet/business, FE auth, shift, purchase, laporan | 32,25 | 7,00 |
 
-Perubahan dari pembagian awal yang disetujui (F3): Purchase (BE, FE, test) tetap di Naufaldi; CI/linter (SETUP-003/004), test katalog, arch test modul, dan test keamanan dipindah ke Akmal untuk menyeimbangkan beban; dokumentasi (DOC-001/002) ditunda ke rilis 1.1.
+Perubahan dari pembagian awal yang disetujui (F3): Purchase (BE, FE, test) tetap di Naufaldi; CI/linter (SETUP-003/004), test katalog, arch test modul, dan test keamanan dipindah ke Akmal untuk menyeimbangkan beban; dokumentasi (DOC-001/002) ditunda ke rilis 1.1. **Pengecualian 2026-10-27:** SETUP-003 dikerjakan Ongki (WIP sudah ada); assignee `@ongki`, reviewer `@akmal`.
+
+**Catatan kapasitas:** beban core Ongki 36,00 melebihi kapasitas 35,25 (selisih 0,75); Akmal 32,75 dan Naufaldi 32,25 masih longgar. Penyeimbangan diputuskan di sprint planning (Open Item #24 di `12_Keputusan_dan_Open_Items.md`).
 
 ### Beban per sprint (hari tugas, kapasitas dalam kurung)
+
 | Sprint | Tanggal | Ongki | Akmal | Naufaldi |
-|--------|---------|-------|-------|----------|
-| S1 | 26 Okt–6 Nov | 7,50 (7,50) | 5,25 (7,50) | 4,00 (7,50) |
+| --- | --- | --- | --- | --- |
+| S1 | 26 Okt–6 Nov | 8,50 (7,50) | 4,75 (7,50) | 4,00 (7,50) |
 | S2 | 9–20 Nov | 7,50 (7,50) | 7,50 (7,50) | 7,50 (7,50) |
 | S3 | 23 Nov–4 Des | 7,50 (7,50) | 8,00 (7,50) | 8,00 (7,50) |
-| S4 | 7–18 Des | 7,50 (7,50) | 7,00 (7,50) | 7,50 (7,50) |
+| S4 | 7–18 Des | 7,00 (7,50) | 7,00 (7,50) | 7,50 (7,50) |
 | S5 | 21–30 Des | 5,50 (5,25) | 5,50 (5,25) | 5,25 (5,25) |
 
 Sprint dihitung dari simulasi penjadwalan: tiket diurutkan menurut jalur kritis, dependency lintas developer dihormati, dan tiket mengisi celah kosong developer. Sprint di kolom tiket adalah **rencana awal**; tim memperbarui saat sprint planning.
 
 ## 3. Jalur Kritis dan Urutan Kerja
+
 Rantai dependency terpanjang (kerjakan tanpa jeda; keterlambatan di sini menggeser seluruh rilis):
 `SETUP-001 → SETUP-005 → DB-TEN-001 → DB-TEN-002 → BE-RBAC-001 → BE-CAT-001 → BE-CAT-002 → BE-CAT-004 → BE-CAT-005 → BE-ORD-003 → BE-ORD-005 → BE-PAY-002 → BE-PAY-003 → INT-ENG-001 → TEST-E2E-001 → DEPLOY-002`
 
@@ -63,7 +77,7 @@ Rantai dependency terpanjang (kerjakan tanpa jeda; keterlambatan di sini mengges
 
 **Titik sinkron antar developer**
 | Titik | Pemberi | Penerima | Kenapa penting |
-|-------|---------|----------|----------------|
+|——-|———|———-|—————-|
 | `BE-RBAC-001`, `DB-TEN-002` | Ongki | Semua | Semua endpoint butuh permission dan tenant scope |
 | `BE-INV-001/002` | Akmal | Ongki, Naufaldi | `StockService` dipakai bayar (BE-PAY-003) dan purchase (BE-PUR-003) |
 | `BE-REC-001`, `BE-CAT-005` | Akmal, Naufaldi | Ongki | Snapshot order butuh katalog dan recipe |
@@ -71,9 +85,10 @@ Rantai dependency terpanjang (kerjakan tanpa jeda; keterlambatan di sini mengges
 | `BE-ENG-002` | Akmal | Ongki | Dipanggil di dalam transaksi bayar |
 
 ## 4. Cut List dan Aturan Eskalasi
+
 Bila akhir **S2 (20 Nov)** beban terlambat > 2 hari-orang, atau akhir **S4 (18 Des)** ada tiket core belum Done, potong **berurutan** (setelah disetujui Ongki):
 | Urutan | Tiket | Hemat | Konsekuensi |
-|--------|-------|-------|-------------|
+|——–|——-|——-|————-|
 | 1 | `FE-ENG-001` indikator stok di POS | 0,5 | Kasir tidak melihat peringatan stok di layar POS |
 | 2 | `FE-PWA-002` banner offline | 0,5 | Offline tidak diberi tahu eksplisit |
 | 3 | `TEST-E2E-002` E2E inventory/purchase | 1 | Diuji manual saat UAT |
@@ -83,34 +98,37 @@ Bila akhir **S2 (20 Nov)** beban terlambat > 2 hari-orang, atau akhir **S4 (18 D
 Yang **tidak boleh** dipotong: seluruh `StockService`, engine, payment, refund, shift, tenant isolation, audit pencatatan, dan test terkait.
 
 ## 5. Daftar Task per Fase dan Modul
+
 Status awal semua tiket: 🔲. Kolom **Sprint** = rencana awal.
 
-
 ### 🚀 FASE 0 — SETUP & INFRASTRUKTUR (S1)
+
 > 9 tiket, 7.00 hari-orang
+> 
 
 #### Modul: Setup & Infrastruktur
 
 | ID | Task | Estimasi | Assignee | Dependency | Referensi | Sprint | Status |
-|----|------|----------|----------|------------|-----------|--------|--------|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | SETUP-001 | Init monorepo (/backend Laravel 13, /frontend Vue 3 + TS + Vite), branching, PR template | S | @ongki | — | ADR-001; TD §1, §7 | S1 | 🔲 |
-| SETUP-002 | Konfigurasi PostgreSQL Supabase (direct/session pooler) + .env.example per environment | S | @ongki | SETUP-001 | ADR-006; TD §6 | S4 | 🔲 |
-| SETUP-003 | Pint, Larastan, ESLint, Prettier, pre-commit hook | S | @akmal | SETUP-001 | TD §7 | S1 | 🔲 |
+| SETUP-002 | Konfigurasi PostgreSQL lokal (Laragon) + .env.example per environment | S | @ongki | SETUP-001 | ADR-006; TD §6 | S1 | 🔲 |
+| SETUP-003 | Pint, Larastan, Oxlint, ESLint, Prettier, pre-commit hook | S | @ongki | SETUP-001 | TD §7 | S1 | 🔲 |
 | SETUP-004 | CI GitHub Actions: lint + Pest + build frontend | M | @akmal | SETUP-003 | DEPLOY ops §1 | S1 | 🔲 |
 | SETUP-005 | Skeleton backend: app/Modules/*, pola Action/Service/DTO, response envelope, exception handler, prefix /api/v1 | M | @ongki | SETUP-001 | TD §2, §2.4; SDD §4.2 | S1 | 🔲 |
 | SETUP-006 | Skeleton frontend: Vue 3 + Vite + TS, Vue Router, API client (CSRF, 401/419/422), Pinia, Tailwind, toast/dialog | M | @naufaldi | SETUP-001 | TD §3; ADR-001 | S1 | 🔲 |
 | SETUP-007 | Helper Money & Quantity (BIGINT rupiah, DECIMAL qty, half-up) + enum bersama + unit test | S | @ongki | SETUP-005 | ADR-004; SRS §1.4 | S2 | 🔲 |
-| SETUP-008 | Staging + HTTPS; FE dan API satu parent domain (atau proxy rewrite) | M | @ongki | SETUP-004 | NFR-SEC-003; TD §5 | S3 | 🔲 |
+| SETUP-008 | Staging (VPS + Docker + Nginx) + Supabase staging (DB dan Storage) + HTTPS; FE dan API satu parent domain (atau proxy rewrite) | M | @ongki | SETUP-004 | NFR-SEC-003; TD §5, §6; ADR-006 | S3 | 🔲 |
 | SETUP-009 | Arch test Pest: dependensi modul (peta panah), registrasi modul, dan pola nama migrasi | M | @akmal | SETUP-005 | TD §2.3, §2.4 | S1 | 🔲 |
 
-
 ### 📦 FASE 1 — CORE (S1–S5, target 29–30 Des 2026)
+
 > 117 tiket, 94.00 hari-orang
+> 
 
 #### Modul: Platform: Tenant, Auth, RBAC, Audit
 
 | ID | Task | Estimasi | Assignee | Dependency | Referensi | Sprint | Status |
-|----|------|----------|----------|------------|-----------|--------|--------|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | DB-TEN-001 | Migrasi businesses, outlets, users, user_outlets | M | @ongki | SETUP-005 | ERD §3.1; BR-022 | S1 | 🔲 |
 | DB-TEN-002 | Trait BelongsToBusiness (global scope + auto-fill business_id) + helper scope outlet | M | @ongki | DB-TEN-001 | ADR-003; FR-USER-002 | S1 | 🔲 |
 | DB-RBAC-001 | Install Spatie Permission (teams = business_id), seeder 5 role × matriks, config scope Limited/Own | M | @ongki | DB-TEN-001 | ADR-005; SRS §2.1 | S1 | 🔲 |
@@ -135,7 +153,7 @@ Status awal semua tiket: 🔲. Kolom **Sprint** = rencana awal.
 #### Modul: Katalog
 
 | ID | Task | Estimasi | Assignee | Dependency | Referensi | Sprint | Status |
-|----|------|----------|----------|------------|-----------|--------|--------|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | DB-CAT-001 | Migrasi categories, products, modifier_groups, modifier_options, product_modifier_groups | M | @naufaldi | DB-TEN-002 | ERD §3.2 | S1 | 🔲 |
 | BE-CAT-001 | CRUD category (status, sort order) | S | @naufaldi | DB-CAT-001, BE-RBAC-001 | FR-CAT-001; UC-CAT-01 | S1 | 🔲 |
 | BE-CAT-002 | CRUD product + upload gambar ke Supabase Storage (maks 2 MB, jpg/png/webp) | M | @naufaldi | BE-CAT-001 | FR-CAT-002; UC-CAT-01; SEQ-CAT-01 | S1 | 🔲 |
@@ -150,7 +168,7 @@ Status awal semua tiket: 🔲. Kolom **Sprint** = rencana awal.
 #### Modul: Ingredient & Recipe
 
 | ID | Task | Estimasi | Assignee | Dependency | Referensi | Sprint | Status |
-|----|------|----------|----------|------------|-----------|--------|--------|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | DB-ING-001 | Migrasi units, ingredients, ingredient_unit_conversions (seed kg→g, L→ml = 1000) | M | @akmal | DB-TEN-002 | ERD §3.2; BR-046 | S1 | 🔲 |
 | BE-ING-001 | CRUD ingredient (permission inventory.adjust, baca inventory.view) | M | @akmal | DB-ING-001, BE-RBAC-001 | FR-ING-001; UC-ING-01 | S1 | 🔲 |
 | BE-ING-002 | Seeder unit + endpoint GET /units | XS | @akmal | DB-ING-001 | FR-ING-001 | S1 | 🔲 |
@@ -164,7 +182,7 @@ Status awal semua tiket: 🔲. Kolom **Sprint** = rencana awal.
 #### Modul: Inventory
 
 | ID | Task | Estimasi | Assignee | Dependency | Referensi | Sprint | Status |
-|----|------|----------|----------|------------|-----------|--------|--------|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | DB-INV-001 | Migrasi stock_balances, stock_movements (trigger append-only), stock_adjustments, waste_records, stock_opening_batches | M | @akmal | DB-ING-001, DB-AUD-001 | ERD §3.3; ADR-007 | S2 | 🔲 |
 | BE-INV-001 | StockService::apply() (lock FOR UPDATE, before/after, allow_negative_stock, forceNegative) | M | @akmal | DB-INV-001 | ADR-002; ACT-INV-01 | S2 | 🔲 |
 | BE-INV-002 | Idempotensi movement (referensi sama = movement lama) + helper reverse() | S | @akmal | BE-INV-001 | BR-009; NFR-DATA-003 | S2 | 🔲 |
@@ -182,7 +200,7 @@ Status awal semua tiket: 🔲. Kolom **Sprint** = rencana awal.
 #### Modul: Shift & Kas
 
 | ID | Task | Estimasi | Assignee | Dependency | Referensi | Sprint | Status |
-|----|------|----------|----------|------------|-----------|--------|--------|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | DB-SHF-001 | Migrasi shifts, cash_movements (+ UNIQUE parsial 1 OPEN per kasir per outlet) | S | @naufaldi | DB-TEN-002 | ERD §3.4; BR-002 | S1 | 🔲 |
 | BE-SHF-001 | Open shift (opening cash, business_date menurut timezone outlet) | M | @naufaldi | DB-SHF-001, BE-RBAC-001 | FR-SHF-001; UC-SHF-01; SEQ-SHF-01 | S2 | 🔲 |
 | BE-SHF-002 | Cash in / cash out (alasan wajib, cash.manage) | S | @naufaldi | BE-SHF-001 | FR-SHF-002; UC-SHF-02 | S4 | 🔲 |
@@ -197,7 +215,7 @@ Status awal semua tiket: 🔲. Kolom **Sprint** = rencana awal.
 #### Modul: POS Order
 
 | ID | Task | Estimasi | Assignee | Dependency | Referensi | Sprint | Status |
-|----|------|----------|----------|------------|-----------|--------|--------|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | DB-ORD-001 | Migrasi orders, order_items, order_item_modifiers, order_sequences | M | @ongki | DB-CAT-001, DB-SHF-001, DB-REC-001 | ERD §3.4 | S2 | 🔲 |
 | BE-ORD-001 | OrderNumberGenerator aman konkurensi {OUTLET}-{YYMMDD}-{urut} | S | @ongki | DB-ORD-001 | FR-ORD-007; BR-019 | S2 | 🔲 |
 | BE-ORD-002 | PriceCalculator: subtotal, diskon, service, pajak exclusive, pembulatan total | M | @ongki | SETUP-007, BE-USER-002 | FR-ORD-002; BR-005, BR-036; ACT-ORD-02 | S2 | 🔲 |
@@ -216,7 +234,7 @@ Status awal semua tiket: 🔲. Kolom **Sprint** = rencana awal.
 #### Modul: Payment, Struk, Refund
 
 | ID | Task | Estimasi | Assignee | Dependency | Referensi | Sprint | Status |
-|----|------|----------|----------|------------|-----------|--------|--------|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | DB-PAY-001 | Migrasi payments, refunds (+ kolom gateway nullable, trigger append-only payments) | M | @ongki | DB-ORD-001 | ERD §3.4; Lampiran SDD B | S2 | 🔲 |
 | BE-PAY-001 | Interface PaymentMethod (strategy): Cash, QRIS manual; CARD/GATEWAY stub nonaktif | M | @ongki | DB-PAY-001 | FR-PAY-001; BR-007 | S3 | 🔲 |
 | BE-PAY-002 | POST /orders/{id}/pay: Idempotency-Key, lock order, PAID→COMPLETED atomik | M | @ongki | BE-PAY-001, BE-ORD-005 | FR-PAY-001; UC-PAY-01; SEQ-PAY-01 | S3 | 🔲 |
@@ -232,7 +250,7 @@ Status awal semua tiket: 🔲. Kolom **Sprint** = rencana awal.
 #### Modul: Engine Sale → Inventory
 
 | ID | Task | Estimasi | Assignee | Dependency | Referensi | Sprint | Status |
-|----|------|----------|----------|------------|-----------|--------|--------|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | BE-ENG-001 | RecipeUsageCalculator: item × recipe (versi snapshot), agregat per bahan | M | @akmal | BE-REC-001, DB-ORD-001 | FR-ENG-001; BR-009, BR-010 | S2 | 🔲 |
 | BE-ENG-002 | DeductStockForOrder: lock urut ingredient_id, movement SALE idempoten | M | @akmal | BE-ENG-001, BE-INV-002 | ADR-002; SEQ-PAY-01 | S2 | 🔲 |
 | BE-ENG-003 | Kebijakan stok minus: stock_shortage di respons dan audit | S | @akmal | BE-ENG-002 | FR-ENG-002; BR-011 | S3 | 🔲 |
@@ -245,7 +263,7 @@ Status awal semua tiket: 🔲. Kolom **Sprint** = rencana awal.
 #### Modul: Purchasing
 
 | ID | Task | Estimasi | Assignee | Dependency | Referensi | Sprint | Status |
-|----|------|----------|----------|------------|-----------|--------|--------|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | DB-PUR-001 | Migrasi suppliers, purchases, purchase_items, document_sequences | M | @naufaldi | DB-ING-001, DB-TEN-002 | ERD §3.6; BR-045…050 | S2 | 🔲 |
 | BE-PUR-001 | CRUD supplier (soft delete, INACTIVE tidak bisa dipilih) | S | @naufaldi | DB-PUR-001, BE-RBAC-001 | FR-PUR-001; UC-PUR-01 | S2 | 🔲 |
 | BE-PUR-002 | Purchase DRAFT: buat/ubah item (satuan beli + faktor konversi), nomor PO | M | @naufaldi | BE-PUR-001, BE-ING-001, BE-INV-003 | FR-PUR-002; UC-PUR-02; BR-046, BR-049 | S3 | 🔲 |
@@ -259,7 +277,7 @@ Status awal semua tiket: 🔲. Kolom **Sprint** = rencana awal.
 #### Modul: Laporan & Dashboard
 
 | ID | Task | Estimasi | Assignee | Dependency | Referensi | Sprint | Status |
-|----|------|----------|----------|------------|-----------|--------|--------|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | BE-RPT-001 | Laporan sales (gross, diskon, service, pajak, pembulatan, net, COGS, gross profit, refund) | M | @naufaldi | BE-PAY-002, BE-ORD-007 | FR-RPT-001; UC-RPT-01 | S3 | 🔲 |
 | BE-RPT-003 | Laporan payment per metode | S | @naufaldi | BE-RPT-001 | FR-RPT-003 | S4 | 🔲 |
 | FE-RPT-001 | Halaman laporan sales & payment | M | @naufaldi | BE-RPT-003, FE-AUTH-003 | SCR-RPT-01 | S5 | 🔲 |
@@ -268,7 +286,7 @@ Status awal semua tiket: 🔲. Kolom **Sprint** = rencana awal.
 #### Modul: PWA, Hardening, Deploy
 
 | ID | Task | Estimasi | Assignee | Dependency | Referensi | Sprint | Status |
-|----|------|----------|----------|------------|-----------|--------|--------|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | FE-PWA-001 | Manifest + service worker (vite-plugin-pwa), cache aset statis saja | M | @akmal | FE-ORD-001 | FR-PWA-001; F-17 | S3 | 🔲 |
 | FE-PWA-002 | Banner offline + aksi tulis ditolak + retry aman (key sama) | S | @akmal | FE-PWA-001, BE-PAY-002 | FR-PWA-001 | S5 | 🔲 |
 | DB-SEED-001 | Seeder demo (business, outlet, menu, recipe, stok, supplier) | S | @akmal | BE-REC-001, BE-INV-003, BE-PUR-001 | TD §8 | S5 | 🔲 |
@@ -279,21 +297,22 @@ Status awal semua tiket: 🔲. Kolom **Sprint** = rencana awal.
 | DEPLOY-001 | Environment production, HTTPS, backup harian + uji restore | M | @ongki | SETUP-008 | NFR-REL-002; DO §3 | S4 | 🔲 |
 | DEPLOY-002 | Deploy production + smoke test | S | @ongki | DEPLOY-001, TEST-E2E-001, TEST-E2E-002, TEST-SEC-001 | DO §2 | S5 (cadangan 30 Des) | 🔲 |
 
-
 ### 🔁 FASE 2 — RILIS 1.1 (Jan 2027)
+
 > 22 tiket, 14.75 hari-orang
+> 
 
 #### Modul: Platform: Tenant, Auth, RBAC, Audit
 
 | ID | Task | Estimasi | Assignee | Dependency | Referensi | Sprint | Status |
-|----|------|----------|----------|------------|-----------|--------|--------|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | BE-AUD-002 | GET /audit-logs + filter (tanggal, user, aksi, resource) | S | @naufaldi | BE-AUD-001, BE-RBAC-001 | FR-AUD-002; UC-AUD-01 | R1.1 | 🔲 |
 | FE-AUD-001 | Halaman audit log | S | @naufaldi | BE-AUD-002, FE-AUTH-003 | UC-AUD-01; SCR-AUD-01 | R1.1 | 🔲 |
 
 #### Modul: Ingredient & Recipe
 
 | ID | Task | Estimasi | Assignee | Dependency | Referensi | Sprint | Status |
-|----|------|----------|----------|------------|-----------|--------|--------|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | BE-REC-003 | CRUD recipe per modifier option (F-18) | S | @akmal | DB-REC-001, BE-CAT-004, BE-ING-001 | FR-REC-002; UC-REC-02 | R1.1 | 🔲 |
 | FE-REC-002 | Editor recipe modifier option (F-18) | S | @akmal | BE-REC-003, FE-CAT-003 | SCR-CAT-03 | R1.1 | 🔲 |
 | FE-REC-003 | Tampilan recipe read-only untuk Inventory/Kitchen tanpa HPP | XS | @akmal | BE-REC-001, FE-AUTH-003 | UC-REC-03 | R1.1 | 🔲 |
@@ -301,7 +320,7 @@ Status awal semua tiket: 🔲. Kolom **Sprint** = rencana awal.
 #### Modul: Inventory
 
 | ID | Task | Estimasi | Assignee | Dependency | Referensi | Sprint | Status |
-|----|------|----------|----------|------------|-----------|--------|--------|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | DB-INV-002 | Migrasi stock_opnames, stock_opname_items (UNIQUE parsial IN_PROGRESS) | S | @akmal | DB-INV-001 | ERD §3.3; BR-017 | R1.1 | 🔲 |
 | BE-INV-007 | Opname: mulai (snapshot), input hitungan, batalkan | M | @akmal | DB-INV-002, BE-INV-004 | FR-INV-006; UC-INV-05; SEQ-INV-02 | R1.1 | 🔲 |
 | BE-INV-008 | Opname submit: selisih vs snapshot diterapkan ke stok live (urut ingredient_id) | S | @akmal | BE-INV-007 | BR-017; STM-OPNAME | R1.1 | 🔲 |
@@ -311,26 +330,26 @@ Status awal semua tiket: 🔲. Kolom **Sprint** = rencana awal.
 #### Modul: POS Order
 
 | ID | Task | Estimasi | Assignee | Dependency | Referensi | Sprint | Status |
-|----|------|----------|----------|------------|-----------|--------|--------|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | BE-KIT-001 | Antrian dapur: GET order COMPLETED kitchen_status NEW (tanpa harga), POST ready | S | @ongki | BE-ORD-005 | FR-KIT-001; UC-KIT-01; BR-033 | R1.1 | 🔲 |
 | FE-KIT-001 | Halaman antrian dapur (polling 10 detik) | S | @ongki | BE-KIT-001 | SCR-KIT-01 | R1.1 | 🔲 |
 
 #### Modul: Engine Sale → Inventory
 
 | ID | Task | Estimasi | Assignee | Dependency | Referensi | Sprint | Status |
-|----|------|----------|----------|------------|-----------|--------|--------|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | BE-ENG-006 | Pemakaian bahan modifier option ditambahkan ke agregat (F-18) | S | @akmal | BE-ENG-001, BE-REC-003 | FR-REC-002; FR-ENG-001 | R1.1 | 🔲 |
 
 #### Modul: Purchasing
 
 | ID | Task | Estimasi | Assignee | Dependency | Referensi | Sprint | Status |
-|----|------|----------|----------|------------|-----------|--------|--------|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | BE-PUR-005 | Cancel purchase DRAFT + partial receive (purchase_receipts) | M | @naufaldi | BE-PUR-003 | FR-PUR-005; UC-PUR-05 | R1.1 | 🔲 |
 
 #### Modul: Laporan & Dashboard
 
 | ID | Task | Estimasi | Assignee | Dependency | Referensi | Sprint | Status |
-|----|------|----------|----------|------------|-----------|--------|--------|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | BE-RPT-002 | Laporan produk + daftar no recipe | S | @naufaldi | BE-RPT-001 | FR-RPT-002; BR-010 | R1.1 | 🔲 |
 | BE-RPT-004 | Laporan inventory (stok, movement per tipe, low stock, minus) + waste + pembelian | M | @naufaldi | BE-INV-006, BE-INV-005, BE-PUR-003 | FR-RPT-004 | R1.1 | 🔲 |
 | BE-RPT-005 | Dashboard permission-aware (timezone outlet, cache TTL pendek) | M | @naufaldi | BE-RPT-001, BE-INV-006, BE-SHF-005 | FR-RPT-005; UC-RPT-02 | R1.1 | 🔲 |
@@ -341,18 +360,22 @@ Status awal semua tiket: 🔲. Kolom **Sprint** = rencana awal.
 #### Modul: PWA, Hardening, Deploy
 
 | ID | Task | Estimasi | Assignee | Dependency | Referensi | Sprint | Status |
-|----|------|----------|----------|------------|-----------|--------|--------|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | DOC-001 | Dokumentasi API (OpenAPI/Scribe) | M | @akmal | BE-RPT-003, BE-PUR-004 | SDD §4 | R1.1 | 🔲 |
 | DOC-002 | README + runbook dev (Laragon, Supabase, queue worker) | S | @akmal | SETUP-002 | TD §6 | R1.1 | 🔲 |
 
 ---
 
 ## 6. Catatan Dependensi Lintas Rilis
+
 - `BE-ENG-001` memproses recipe produk di core; pemakaian bahan modifier ditambahkan oleh `BE-ENG-006` (rilis 1.1) setelah `BE-REC-003`.
 - `kitchen_status` terisi `NEW` saat bayar di core meskipun layar dapur baru hadir di 1.1 (tidak ada migrasi tambahan).
 - Tabel opname dibuat di `DB-INV-002` (rilis 1.1); jangan membuat migrasinya di core.
 
 ## 7. Changelog
+
 | Versi | Tanggal | Perubahan | Author |
-|-------|---------|-----------|--------|
+| --- | --- | --- | --- |
 | 3.0 | 2026-10-25 | Re-baseline penuh dari 134 tiket v1.1 ke 148 tiket: Vue 3 (kembali ke stack awal), Spatie, Supabase, Purchase inti, rilis 1.1, laporan minimal core, jadwal mulai 26 Okt | Claude |
+| 3.0.1 | 2026-10-27 | SETUP-002 dipersempit ke PostgreSQL lokal dan dipindah S4→S1 (beban Ongki S1 8,00 dari 7,50; S4 7,00); verifikasi Supabase dan R-B pindah ke SETUP-008; SETUP-003 menambah Oxlint (standar scaffold Vue) | Ongki + Claude |
+| 3.0.2 | 2026-10-27 | SETUP-008 diperjelas (cakupan Supabase: project staging, migrasi direct, R-B, Storage; referensi TD §6, ADR-006); SETUP-003 dikerjakan Ongki sebagai pengecualian (beban Ongki S1 8,50, core 36,00; Akmal S1 4,75, core 32,75) | Ongki + Claude |

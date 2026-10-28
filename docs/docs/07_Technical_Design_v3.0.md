@@ -1,8 +1,11 @@
 # Technical Design — F&B POS & Inventory
-> **Versi:** 3.0 | **Tanggal:** 2026-10-25 | **Tier:** Standard | Disepakati sebelum `SETUP-001`.
-> Referensi: SDD v3.0 (ADR), ERD v3.0, SRS v3.0.
+
+> **Versi:** 3.0.3 | **Tanggal:** 2026-10-27 | **Tier:** Standard | Disepakati sebelum `SETUP-001`.
+Referensi: SDD v3.0 (ADR), ERD v3.0, SRS v3.0.
+> 
 
 ## 1. Struktur Repo dan Package
+
 ```
 pos-inventory/
 ├── backend/            # Laravel 13 (API-only), PHP 8.4
@@ -10,12 +13,15 @@ pos-inventory/
 ├── docs/               # dokumen ini (baseline v3.0)
 └── .github/workflows/  # CI
 ```
+
 **Backend (Composer):** `laravel/sanctum`, `spatie/laravel-permission`, `league/flysystem-aws-s3-v3` (Supabase Storage via S3-compatible), `pestphp/pest` + `pest-plugin-arch`, `larastan/larastan`, `laravel/pint`, `knuckleberry/scribe` (OpenAPI di R1.1).
 **Frontend (npm):** `vue`, `vue-router`, `pinia`, `typescript`, `vite`, `tailwindcss`, `zod`, `vite-plugin-pwa`, `vitest` (dev), `playwright` (dev). Opsional bila tim sepakat di `SETUP-006`: `@tanstack/vue-query` untuk state server.
 Versi dikunci di `composer.lock` dan `package-lock.json` pada `SETUP-001`; upgrade mayor hanya lewat tiket.
 
 ## 2. Backend
+
 ### 2.1 Struktur folder backend
+
 ```
 backend/
 ├── app/
@@ -74,7 +80,9 @@ backend/
 │   └── Fixtures/                  # price-vectors.json (dipakai juga FE), fixture laporan
 └── .env.example · composer.json · pint.json · phpstan.neon
 ```
+
 Isi tiap submodul (folder yang kosong tidak dibuat):
+
 ```
 Sales/Order/
 ├── OrderModule.php         # registrasi: routes, policy, event (§2.4)
@@ -86,8 +94,9 @@ Sales/Order/
 ```
 
 ### 2.2 Lapisan dan aturan
+
 | Lapisan | Tugas | Larangan |
-|---------|-------|----------|
+| --- | --- | --- |
 | Controller | Terima request, panggil Action, kembalikan Resource | Tidak ada logika bisnis atau query |
 | Form Request | Validasi + pesan error sesuai SRS | — |
 | Action | Satu use case (mis. `ReceivePurchase`, `PayOrder`), pemilik transaksi DB | Tidak memanggil Controller |
@@ -101,6 +110,7 @@ Sales/Order/
 - RBAC: middleware `outlet.context` memanggil `setPermissionsTeamId(business_id)` sebelum `permission:*`.
 
 ### 2.3 Aturan dependensi modul (dijaga arch test `SETUP-009`)
+
 ```
 Platform  ←  Catalog  ←  Inventory(Recipe, Ingredient)
 Platform  ←  Shift
@@ -109,13 +119,15 @@ Inventory  ←  Engine  ←  Sales (Sales memanggil Engine lewat Contract, bukan
 Inventory  ←  Purchasing
 semua  ←  Reporting (read-only)
 ```
-Panah = "boleh bergantung pada". Contoh larangan: `Inventory` tidak boleh memanggil `Sales`; `Catalog` tidak boleh memanggil `Inventory\Stock`. Komunikasi balik lewat Event.
+
+Panah = “boleh bergantung pada”. Contoh larangan: `Inventory` tidak boleh memanggil `Sales`; `Catalog` tidak boleh memanggil `Inventory\Stock`. Komunikasi balik lewat Event.
 
 ### 2.4 Registrasi Modul dan Migrasi
+
 **Prinsip:** modul didaftarkan **eksplisit** di `config/modules.php` (bukan scan folder), supaya jelas modul mana yang aktif, aman untuk `config:cache`/`route:cache`, dan modul Phase 2 bisa ada di repo tanpa aktif. Tanpa package tambahan.
 
 | File | Isi |
-|------|-----|
+| --- | --- |
 | `app/Support/Contracts/Module.php` | Interface: `routes(): ?string`, `policies(): array` (Model ⇒ Policy), `events(): array` (Event ⇒ listeners) |
 | `app/Support/Module/BaseModule.php` | Implementasi default (semua kosong) supaya tiap modul hanya mengisi yang perlu |
 | `app/Modules/<Grup>/<Sub>/<Sub>Module.php` | Satu class per submodul, `extends BaseModule` |
@@ -124,6 +136,7 @@ Panah = "boleh bergantung pada". Contoh larangan: `Inventory` tidak boleh memang
 | `bootstrap/providers.php` | Daftarkan `ModuleServiceProvider` |
 
 Aturan:
+
 - Middleware per route ditentukan di `routes.php` masing-masing modul (publik, `auth:sanctum`, `outlet.context`, `shift.open`, `permission:*`).
 - Pakai **satu** jalur routing: hapus `api:` dari `withRouting()` di `bootstrap/app.php` atau biarkan `routes/api.php` kosong; jangan dua-duanya aktif.
 - **Modul baru = 3 langkah:** (1) salin folder submodul, (2) isi class `XxxModule`, (3) tambah satu baris di `config/modules.php`.
@@ -140,6 +153,7 @@ Aturan:
 ---
 
 ## 3. Frontend
+
 ```
 frontend/src/
   main.ts · App.vue
@@ -150,6 +164,7 @@ frontend/src/
   stores/               # Pinia: auth, outlet, cart (hanya state klien)
   components/ui/        # tombol, dialog, tabel, toast (Tailwind)
 ```
+
 - Composition API dengan `<script setup lang="ts">`. **State server** (data dari API) diambil lewat composable per fitur; **state klien** (auth, outlet aktif, cart) di Pinia. Jangan menyalin data server ke Pinia.
 - SPA murni: tidak ada data tenant di build statis. Guard di `router/` memeriksa sesi dan `meta.permission`.
 - Estimator total di FE memakai **vektor uji yang sama** dengan backend (`fixtures/price-vectors.json`); angka server menjadi final.
@@ -158,11 +173,13 @@ frontend/src/
 - Formatter rupiah/qty di satu modul (`lib/format.ts`).
 
 ## 4. Konvensi API dan Kontrak
+
 - Prefix `/api/v1`; cookie Sanctum SPA; header `X-Outlet-Id`; envelope respons dan kode error mengikuti SDD §4.2–4.3.
 - Perubahan kontrak: update SDD §4 dan tiket FE terkait pada PR yang sama.
 - Paginasi: `page`, `per_page` (maks 100). Waktu UTC ISO-8601; tampilan memakai timezone outlet.
 
 ## 5. Topologi Deployment
+
 ```
 Browser/PWA ── HTTPS ──▶ pos.<domain>  (Nginx, satu origin)
                            ├─ /api, /sanctum, /up ─▶ php-fpm (Laravel)
@@ -171,6 +188,7 @@ Browser/PWA ── HTTPS ──▶ pos.<domain>  (Nginx, satu origin)
                            │                          └─▶ Supabase: PostgreSQL + Storage
                            └─ lainnya ─▶ file statis frontend/dist (SPA, fallback ke index.html)
 ```
+
 - **Satu origin:** tidak ada CORS; cookie sesi `SameSite=Lax; Secure; HttpOnly`; `SESSION_DOMAIN=null`; `SANCTUM_STATEFUL_DOMAINS=pos.<domain>`.
 - **Dev lokal:** Vite dev server (`localhost:5173`) dengan `server.proxy` untuk `/api` dan `/sanctum` ke `localhost:8000`; selalu buka `http://localhost:5173`; `SANCTUM_STATEFUL_DOMAINS=localhost:5173`. `changeOrigin` dibiarkan `false`.
 - **Production:** `npm run build` menghasilkan `frontend/dist`, disajikan Nginx host; tanpa container Node. Docker Compose di VPS: `app` (php-fpm), `queue`, `scheduler`. Database dan storage di Supabase (tidak di Compose). Container hanya dibuka ke `127.0.0.1`.
@@ -178,32 +196,38 @@ Browser/PWA ── HTTPS ──▶ pos.<domain>  (Nginx, satu origin)
 - Klien non-browser (Flutter, nanti): token Sanctum lewat path yang sama; endpoint token dikerjakan setelah core (tidak di Phase 1).
 
 ## 6. Environment, Database, Queue
+
 - Variabel utama: `APP_KEY`, `DB_*` (host **direct** atau **session pooler**; **bukan** transaction pooler), `CACHE_STORE=database`, `QUEUE_CONNECTION=database`, `SESSION_DRIVER=database`, `FILESYSTEM_DISK=s3` (endpoint Supabase), `SANCTUM_STATEFUL_DOMAINS`, `SESSION_DOMAIN`.
 - Migrasi dijalankan lewat **direct connection** (butuh hak DDL dan trigger).
 - Trigger append-only (`audit_logs`, `stock_movements`, `payments`, `cash_movements`) dibuat di migrasi; test memverifikasinya.
 - Queue worker: `php artisan queue:work --tries=3 --backoff=5`; dipantau supervisor; deploy me-restart worker (`queue:restart`).
-- Dev lokal: Laragon (PHP 8.4) + Supabase project dev atau PostgreSQL lokal; disk lokal untuk gambar.
+- Dev lokal: Laragon (PHP 8.4) + **PostgreSQL lokal Laragon** (DB `pos_inventory`; test memakai DB terpisah berakhiran `_test`); disk lokal untuk gambar. Supabase hanya untuk staging dan production (keputusan 2026-10-26).
 - Kunci Supabase `service_role` hanya di server; tidak pernah masuk FE.
 
 ## 7. Kualitas
+
 | Alat | Aturan |
-|------|--------|
+| --- | --- |
 | Pint | Preset Laravel, wajib lulus di pre-commit dan CI |
 | Larastan | Level 6 (naik bertahap) |
-| ESLint + Prettier | `eslint-plugin-vue` + TypeScript strict |
+| Oxlint + ESLint + Prettier | Standar scaffold `create-vue`: Oxlint (aturan correctness), ESLint (`eslint-plugin-vue` + TypeScript), Prettier. Jangan menambah atau mengganti ruleset tanpa alasan tertulis. Hook pre-commit dan CI menjalankan semuanya **tanpa `--fix`** |
 | Pest | Unit + feature; database PostgreSQL di CI |
 | Pest arch | Aturan §2.3 dan larangan `DB::table` tenant |
 | Playwright | E2E alur utama di staging dan CI |
+
 Cakupan: setiap BR punya minimal satu test (Test Plan §5). Target cakupan baris `StockService`, `PriceCalculator`, `PayOrder`, `ReceivePurchase` ≥ 90%.
 
 ## 8. Seeder dan Data Demo
+
 - `RoleAndPermissionSeeder`: 5 role × permission SRS §2.1 (dipanggil saat register business).
 - `UnitSeeder`: `g`, `kg`, `ml`, `L`, `pcs` + konversi kg→g, L→ml = 1000.
 - `DemoSeeder` (`DB-SEED-001`): 1 business, 2 outlet, 4 user (satu per role), 20 produk, 15 bahan + recipe, stok awal, 2 supplier. Idempoten; hanya staging/lokal.
 
 ## 9. Changelog
+
 | Versi | Tanggal | Perubahan |
-|-------|---------|-----------|
+| --- | --- | --- |
 | 3.0 | 2026-10-25 | Versi pertama: Spatie, Supabase, queue database |
 | 3.0.1 | 2026-10-25 | §2.1 pohon folder lengkap; §2.4 registrasi modul eksplisit dan aturan migrasi |
 | 3.0.2 | 2026-10-25 | Frontend kembali ke Vue 3 + Vite + Pinia; §3 dan §5 ditulis ulang (satu origin, FE statis di Nginx, tanpa container Node) |
+| 3.0.3 | 2026-10-27 | §6 dev lokal memakai PostgreSQL Laragon (Supabase hanya staging/production); §7 lint frontend = standar scaffold Vue (Oxlint + ESLint + Prettier), tanpa `--fix` di hook/CI |
