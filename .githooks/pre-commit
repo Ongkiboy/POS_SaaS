@@ -9,15 +9,15 @@ ROOT="$(git rev-parse --show-toplevel)"
 cd "$ROOT"
 
 # --- Backend: Pint ---
-PHP_FILES=$(git diff --cached --name-only --diff-filter=ACM -- 'backend/*.php' | sed 's|^backend/||')
+PHP_FILES=$(git diff --cached --name-only --diff-filter=ACMR -- 'backend/*.php' | sed 's|^backend/||')
 if [ -n "$PHP_FILES" ]; then
   echo "[pre-commit] Pint..."
   (cd backend && php vendor/bin/pint --test $PHP_FILES)
 fi
 
 # --- Frontend: Oxlint, ESLint, dan Prettier ---
-FE_LINT=$(git diff --cached --name-only --diff-filter=ACM -- 'frontend/*.vue' 'frontend/*.ts' 'frontend/*.mts' 'frontend/*.js' | sed 's|^frontend/||')
-FE_FORMAT=$(git diff --cached --name-only --diff-filter=ACM -- 'frontend/*.vue' 'frontend/*.ts' 'frontend/*.mts' 'frontend/*.js' 'frontend/*.css' | sed 's|^frontend/||')
+FE_LINT=$(git diff --cached --name-only --diff-filter=ACMR -- 'frontend/*.vue' 'frontend/*.ts' 'frontend/*.mts' 'frontend/*.js' | sed 's|^frontend/||')
+FE_FORMAT=$(git diff --cached --name-only --diff-filter=ACMR -- 'frontend/*.vue' 'frontend/*.ts' 'frontend/*.mts' 'frontend/*.js' 'frontend/*.css' | sed 's|^frontend/||')
 
 if [ -n "$FE_LINT" ]; then
   echo "[pre-commit] Oxlint..."
