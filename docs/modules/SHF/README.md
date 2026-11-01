@@ -240,16 +240,16 @@ Detail AC lengkap ada di `tickets/tickets.md` (ID sama).
 
 - **BE-SHF-001** 
   - [ ] Sudah ada shift OPEN 409 SHIFT_ALREADY_OPEN
-  - [ ] Opening cash negatif 422; audit SHIFT_OPENED
+  - [ ] Opening cash negatif 422; audit `SHIFT_OPENED`
 - **BE-SHF-002** 
   - [ ] Alasan kosong 422; tanpa shift OPEN 409
-  - [ ] Tercatat append-only dan masuk audit
+  - [ ] Audit `CASH_IN`/`CASH_OUT` tercatat (append-only)
 - **BE-SHF-003** 
   - [ ] Expected = opening + cash sales (bersih kembalian) + in − out − cash refund
   - [ ] Pembayaran non-tunai tampil di non_cash dan tidak masuk Expected Cash
 - **BE-SHF-004** 
   - [ ] Ada order pending 409 SHIFT_HAS_PENDING_ORDERS dengan jumlah order
-  - [ ] Sukses menyimpan expected, actual, difference; shift CLOSED tidak menerima transaksi
+  - [ ] Sukses menyimpan expected, actual, difference; shift CLOSED tidak menerima transaksi; audit `SHIFT_CLOSED`
 - **BE-SHF-005** 
   - [ ] open_hours_exceeded true bila terbuka > 24 jam
   - [ ] Order tanpa shift OPEN ditolak 409 NO_OPEN_SHIFT

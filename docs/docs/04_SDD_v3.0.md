@@ -54,7 +54,7 @@ Worker dan scheduler tetap disiapkan walau Phase 1 hampir seluruhnya sinkron: au
 | Layer | Teknologi | Versi | Alasan |
 |-------|-----------|-------|--------|
 | Backend | Laravel 13 (API-only, modul di `app/Modules`), PHP 8.4 | dikunci di SETUP-001 | Keahlian tim; Action/Service/Policy |
-| Frontend | Vue 3 + TypeScript + Vite + Pinia + Tailwind | stabil terbaru | State POS berat (cart, modifier, dialog); PWA |
+| Frontend | Vue 3 + TypeScript + Router + Vite + Pinia + Tailwind + Pretier | stabil terbaru | State POS berat (cart, modifier, dialog); PWA |
 | Database | PostgreSQL di Supabase (direct/session pooler) | stabil terbaru | Partial unique index, `FOR UPDATE`, JSONB, CHECK |
 | RBAC | Spatie Permission (teams = business) | stabil terbaru | Package matang; aturan Limited/Own di Policy |
 | Cache / Queue | Driver database (core); Cache/Queue (driver database) menyusul saat Midtrans (Phase 2) | | Cache katalog/dashboard, queue, throttle |
@@ -67,7 +67,7 @@ Worker dan scheduler tetap disiapkan walau Phase 1 hampir seluruhnya sinkron: au
 ### 1.4 Keputusan Arsitektur (ADR)
 | ID | Keputusan | Alternatif ditolak | Alasan | Konsekuensi |
 |----|-----------|--------------------|--------|-------------|
-| ADR-001 | Laravel API + **Vue 3 SPA** (Vite, Pinia, PWA via vite-plugin-pwa) — **Accepted** (kembali ke stack awal; Next.js sempat dipilih 24 Okt dan dibatalkan 25 Okt) | Next.js, Inertia, Blade+Livewire | POS interaktif; tanpa SSR sehingga SPA statis cukup; Flutter direncanakan | FE statis disajikan Nginx (tanpa proses Node di server); satu origin lewat Nginx path-based (dev: proxy Vite); dua build/CI; kontrak `/api/v1` harus stabil |
+| ADR-001 | Laravel API + **Vue 3 SPA** (Vite, Pinia, PWA via vite-plugin-pwa) — **Accepted** | Inertia, Blade+Livewire | POS interaktif; tanpa SSR sehingga SPA statis cukup; Flutter direncanakan | FE statis disajikan Nginx (tanpa proses Node di server); satu origin lewat Nginx path-based (dev: proxy Vite); dua build/CI; kontrak `/api/v1` harus stabil |
 | ADR-002 | Ledger `stock_movements` + cache `stock_balances`, potong stok **sinkron** di transaksi pembayaran | Saldo saja; saldo = SUM; deduct via queue | Audit + cepat + tanpa stok setengah jadi | Pembayaran puluhan ms lebih lambat; wajib lock berurutan `ingredient_id`; job rekonsiliasi di Phase 2 |
 | ADR-003 | Single DB, shared schema, `business_id` di **semua** tabel tenant + global scope | DB-per-tenant | MVP; biaya ops | Risiko query tanpa scope → `TEST-AUTH-001` dataset-driven, larangan `DB::table()` tanpa helper scope |
 | ADR-004 | Uang `BIGINT` rupiah; qty `DECIMAL(18,4)`; waktu UTC; **pembulatan total ke increment outlet di level order (semua metode)**; ID `BIGINT` identity | ULID/UUID; DECIMAL untuk uang | Presisi; lihat ERD v3.0 §7.3 | Half-up per komponen (service, pajak) lalu pembulatan total |
@@ -1605,7 +1605,7 @@ Klik ganda saat transaksi sama masih aktif mengembalikan `200` dengan data yang 
 ### 4.6 Event & Notifikasi
 | Event | Pemicu | Listener / Job | Channel | Payload |
 |-------|--------|----------------|---------|---------|
-| `AuditRecorded` | Setiap aksi di FR-AUD-001 (setelah commit) | `WriteAuditLogJob` | Queue (database) | actor, outlet, action, resource, before/after |
+| `AuditRecorded` | Setiap aksi di katalog audit SRS FR-AUD-001 (setelah commit) | `WriteAuditLogJob` | Queue (database) | actor, outlet, action, resource, before/after |
 | `SaleCompleted` | `POST /orders/{id}/pay` sukses (setelah commit) | Invalidasi cache dashboard; (Phase 2: notifikasi low stock) | Queue (driver database) | `order_id`, `outlet_id`, `ingredient_ids` |
 | `PurchaseReceived` | `POST /purchases/{id}/receive` sukses (setelah commit) | Audit `PURCHASE_RECEIVED`; invalidasi cache stok/dashboard | Queue (database) | `purchase_id`, `outlet_id`, `ingredient_ids` |
 | `CatalogChanged` | Produk/kategori/modifier/recipe option berubah | Hapus cache `GET /pos/catalog` | Sinkron | `business_id` |

@@ -11,7 +11,7 @@
 | A5 | Tidak ada cuti bersama Desember | Kapasitas 47 hari kerja |
 | B1–B6 | Midtrans Phase 2; akun per business; QRIS via Core API; settlement tetap potong stok (BR-041); fee tidak dicatat; refund API + fallback manual | Modul GW-P2 |
 | C | Belum ada tiket/kode dikerjakan; tidak perlu migrasi koreksi | Jadwal mulai 26 Okt |
-| D | Frontend **Vue 3** (Next.js sempat dipilih 24 Okt, dibatalkan 25 Okt); Laravel API; default D lain dipakai (sesi idle 120 menit, qty 1–999, polling dapur 10 dtk / QR 3 dtk, rate limit login 5/menit, RPO 24 jam / RTO 2 jam, diskon kasir 10%, increment pembulatan 100, email login unik global, ID BIGINT identity) | ADR-001, ADR-014 |
+| D | Frontend **Vue 3**; Laravel API; default D lain dipakai (sesi idle 120 menit, qty 1–999, polling dapur 10 dtk / QR 3 dtk, rate limit login 5/menit, RPO 24 jam / RTO 2 jam, diskon kasir 10%, increment pembulatan 100, email login unik global, ID BIGINT identity) | ADR-001, ADR-014 |
 | E | Struktur `/docs` + `/modules`; dokumen pendukung dibuat; satu baseline v3.0; wireframe versi teks | Paket ini |
 | F1 c + J3 | Core 30 Des; fitur Should ke rilis 1.1; laporan core minimal (sales, payment, stok); dashboard dan laporan lain ke 1.1 | PRD §3, SRS §1.5 |
 | F2 + P1 | Purchase masuk Phase 1 versi inti; cancel dan partial receive ke 1.1 | FR-PUR, ADR-015 |

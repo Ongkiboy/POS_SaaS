@@ -476,13 +476,13 @@ Detail AC lengkap ada di `tickets/tickets.md` (ID sama).
   - [ ] Produk INACTIVE 422 PRODUCT_UNAVAILABLE; qty di luar 1–999 422
   - [ ] Mengubah harga produk setelah order dibuat tidak mengubah order
 - **BE-ORD-004** 
-  - [ ] Diskon > subtotal 422 DISCOUNT_INVALID
+  - [ ] Diskon > subtotal 422 DISCOUNT_INVALID; audit `DISCOUNT_APPLIED`
   - [ ] Cashier melebihi batas outlet 403 DISCOUNT_LIMIT_EXCEEDED
 - **BE-ORD-005** 
   - [ ] Transisi tidak terdaftar 409 INVALID_STATE_TRANSITION
   - [ ] Reopen ditolak bila ada payment SUCCESS; titik ekstensi guard gateway PENDING tersedia
 - **BE-ORD-006** 
-  - [ ] Order sudah dibayar 409 "harus melalui refund"
+  - [ ] Order sudah dibayar 409 "harus melalui refund"; audit `ORDER_CANCELLED`
   - [ ] Cashier membatalkan order orang lain 403
 - **BE-ORD-007** 
   - [ ] Filter tanggal (business date), status, kasir, nomor order

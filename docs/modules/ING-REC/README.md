@@ -175,13 +175,13 @@ Detail AC lengkap ada di `tickets/tickets.md` (ID sama).
 **Acceptance Criteria ringkas**
 
 - **BE-ING-001** 
-  - [ ] SKU ganda 422; base unit tidak bisa diubah bila sudah ada movement
+  - [ ] SKU ganda 422; base unit tidak bisa diubah bila sudah ada movement; perubahan `last_cost` manual menulis audit `INGREDIENT_COST_CHANGED`
   - [ ] last_cost negatif ditolak; perubahan tidak mengubah movement/order lama
 - **BE-ING-002** 
   - [ ] GET /units mengembalikan 5 satuan
   - [ ] Seeder idempoten (aman dijalankan ulang)
 - **BE-REC-001** 
-  - [ ] Simpan membuat version+1 dan menonaktifkan versi lama dalam satu transaksi
+  - [ ] Simpan membuat version+1, menonaktifkan versi lama (satu transaksi), audit `RECIPE_UPDATED`
   - [ ] Qty ≤ 0, bahan ganda, recipe kosong ditolak dengan pesan SRS
 - **BE-REC-002** 
   - [ ] HPP produk tanpa recipe = 0 dan ditandai no recipe

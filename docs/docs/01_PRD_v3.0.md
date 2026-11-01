@@ -8,7 +8,7 @@
 ## Perubahan inti v3.0 dibanding v2.1
 | # | Perubahan | Dasar |
 |---|-----------|-------|
-| 1 | Frontend **tetap Vue 3** (stack awal; Next.js sempat dipilih 24 Okt dan dibatalkan 25 Okt); Laravel tetap API-only | Keputusan 2026-10-25 |
+| 1 | Frontend **Vue 3** (stack awal); Laravel tetap API-only | Keputusan 2026-10-25 |
 | 2 | **Purchase masuk Phase 1** versi inti (supplier, purchase DRAFT → RECEIVED, update `last_cost`, konversi kg→g dan L→ml) | F2 + P1 |
 | 3 | Dibagi dua rilis: **core 30 Des 2026** dan **rilis 1.1 Januari 2027** (opname, dapur, export CSV, UI audit log, recipe modifier, cancel/partial purchase, laporan lanjutan, dashboard) | F1 c + J3 |
 | 4 | Laporan core hanya sales, payment, dan stok; dashboard dan laporan lain ke rilis 1.1 | J3 |
