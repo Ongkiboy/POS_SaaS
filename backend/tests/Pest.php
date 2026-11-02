@@ -1,6 +1,11 @@
 <?php
 
+use App\Modules\Platform\Business\Models\Business;
+use App\Modules\Platform\Outlet\Models\Outlet;
+use App\Modules\Platform\Rbac\Services\SeedBusinessRoles;
+use App\Modules\Platform\User\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\PermissionRegistrar;
 use Tests\TestCase;
 
 /*
@@ -47,4 +52,28 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+function rbacSeededBusiness(): Business
+{
+    $business = Business::factory()->create();
+    app(SeedBusinessRoles::class)->run($business);
+
+    return $business;
+}
+
+/**
+ * @param  list<Outlet>  $outlets
+ */
+function rbacUserWithRole(Business $business, string $role, array $outlets = []): User
+{
+    $user = User::factory()->for($business)->create();
+
+    foreach ($outlets as $outlet) {
+        $user->outlets()->attach($outlet->id, ['business_id' => $business->id]);
+    }
+
+    app(PermissionRegistrar::class)->setPermissionsTeamId($business->id);
+    $user->assignRole($role);
+
+    return $user->fresh();
 }
