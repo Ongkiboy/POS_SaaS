@@ -10,15 +10,14 @@ use Illuminate\Database\Eloquent\Scope;
 /**
  * Scope generik: tipe model mengikuti model yang memasangnya (stub Larastan untuk Scope bersifat generik).
  *
- * @template TModel of Model
  *
- * @implements Scope<TModel>
+ *
+ * @implements Scope<Model>
  */
 final class TenantScope implements Scope
 {
     /**
-     * @param  Builder<TModel>  $builder
-     * @param  TModel  $model
+     * @param  Builder<*>  $builder
      */
     public function apply(Builder $builder, Model $model): void
     {
