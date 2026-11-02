@@ -8,3 +8,9 @@ parameters:
         - config
         - database
         - routes
+    ignoreErrors:
+        # Sementara sampai #11 DB-SHF-001 (Shift memakai HasOutletScope). Hapus blok ini di tiket itu.
+        -
+            identifier: trait.unused
+            path: app/Modules/Platform/Tenant/Concerns/HasOutletScope.php
+            path: app/Modules/Platform/Tenant/Concerns/BelongsToBusinnes.php
