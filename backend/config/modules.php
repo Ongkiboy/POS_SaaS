@@ -1,5 +1,6 @@
 <?php
 
+use App\Modules\Platform\Rbac\RbacModule;
 use App\Modules\Platform\Tenant\TenantModule;
 
 return [
@@ -9,5 +10,6 @@ return [
      */
     'enabled' => [
         TenantModule::class,
+        RbacModule::class,
     ],
 ];
