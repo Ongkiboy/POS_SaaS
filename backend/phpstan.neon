@@ -13,4 +13,3 @@ parameters:
         -
             identifier: trait.unused
             path: app/Modules/Platform/Tenant/Concerns/HasOutletScope.php
-            path: app/Modules/Platform/Tenant/Concerns/BelongsToBusinnes.php
