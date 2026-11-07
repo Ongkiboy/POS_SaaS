@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 dataset('pemetaan exception', [
-    'UNAUTHENTICATED' => [new AuthenticationException, 401, 'UNAUTHENTICATED'],
-    'FORBIDDEN' => [new AuthorizationException, 403, 'FORBIDDEN'],
-    'NOT_FOUND (model)' => [new ModelNotFoundException, 404, 'NOT_FOUND'],
-    'INVALID_STATE_TRANSITION' => [new InvalidStateTransitionException, 409, 'INVALID_STATE_TRANSITION'],
-    'RATE_LIMITED' => [new TooManyRequestsHttpException(60), 429, 'RATE_LIMITED'],
+    '[401] UNAUTHENTICATED' => [new AuthenticationException, 401, 'UNAUTHENTICATED'],
+    '[403] FORBIDDEN' => [new AuthorizationException, 403, 'FORBIDDEN'],
+    '[404] NOT_FOUND (model)' => [new ModelNotFoundException, 404, 'NOT_FOUND'],
+    '[409] INVALID_STATE_TRANSITION' => [new InvalidStateTransitionException, 409, 'INVALID_STATE_TRANSITION'],
+    '[429] RATE_LIMITED' => [new TooManyRequestsHttpException(60), 429, 'RATE_LIMITED'],
 ]);
 
 it('memetakan exception ke envelope dan kode SDD §4.3', function (Throwable $exception, int $status, string $code) {
