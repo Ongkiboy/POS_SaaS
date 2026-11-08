@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
@@ -18,12 +19,16 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory;
 
+    use HasRoles;
     use Notifiable;
     use SoftDeletes;
 
     protected $fillable = ['business_id', 'name', 'email', 'password', 'status'];
 
     protected $hidden = ['password', 'remember_token'];
+
+    /** Guard Spatie: Sanctum SPA memakai sesi web. */
+    protected $guard_name = 'web';
 
     /**
      * @return array<string, string>
