@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Untuk model yang punya kolom outlet_id. Pemakaian: Model::query()->forOutlet($outletId).
+ * Untuk model yang punya kolom outlet_id.
+ * Pemakaian: Model::query()->forOutlet($outletId).
  *
  * @phpstan-require-extends Model
  *
