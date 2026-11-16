@@ -37,6 +37,7 @@ function dbRbacUser(Business $business, string $role): User
 }
 
 beforeEach(function () {
+
     $this->business = Business::factory()->create();
     app(SeedBusinessRoles::class)->run($this->business);
 });
