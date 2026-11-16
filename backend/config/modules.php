@@ -1,5 +1,6 @@
 <?php
 
+use App\Modules\Inventory\Ingredient\IngredientModule;
 use App\Modules\Platform\Rbac\RbacModule;
 use App\Modules\Platform\Tenant\TenantModule;
 
@@ -11,5 +12,6 @@ return [
     'enabled' => [
         TenantModule::class,
         RbacModule::class,
+        IngredientModule::class,
     ],
 ];

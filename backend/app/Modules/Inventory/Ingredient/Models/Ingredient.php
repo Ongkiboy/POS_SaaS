@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class Ingredient extends Model
 {
@@ -48,6 +50,15 @@ class Ingredient extends Model
     public function conversions(): HasMany
     {
         return $this->hasMany(IngredientUnitConversion::class);
+    }
+
+    public function hasStockMovements(): bool
+    {
+        if (! Schema::hasTable('stock_movements')) {
+            return false;
+        }
+
+        return DB::query()->from('stock_movements')->where('ingredient_id', $this->id)->exists();
     }
 
     protected static function newFactory(): IngredientFactory
