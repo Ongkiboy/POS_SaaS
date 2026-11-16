@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 
 /**
+ * Scope generik: tipe model mengikuti model yang memasangnya (stub Larastan untuk Scope bersifat generik).
+ *
  * @template TModel of Model
  *
  * @implements Scope<TModel>
