@@ -27,7 +27,11 @@ class User extends Authenticatable
 
     protected $hidden = ['password', 'remember_token'];
 
-    /** Guard Spatie: Sanctum SPA memakai sesi web. */
+    /**
+     * Guard Spatie: Sanctum SPA memakai sesi web.
+     *
+     * @var string
+     */
     protected $guard_name = 'web';
 
     /**
