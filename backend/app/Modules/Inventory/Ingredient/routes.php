@@ -1,10 +1,15 @@
 <?php
 
 use App\Modules\Inventory\Ingredient\Http\Controllers\IngredientController;
+use App\Modules\Inventory\Ingredient\Http\Controllers\UnitController;
 use Illuminate\Support\Facades\Route;
 
 // Prefix /api/v1 dan middleware 'api' sudah dipasang ModuleServiceProvider.
 Route::middleware(['auth'])->group(function (): void {
+    Route::get('/units', [UnitController::class, 'index'])
+        ->middleware('permission:inventory.view')
+        ->name('inventory.units.index');
+
     Route::get('/ingredients', [IngredientController::class, 'index'])
         ->middleware('permission:inventory.view')
         ->name('inventory.ingredients.index');
