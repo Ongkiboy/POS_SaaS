@@ -67,7 +67,7 @@ final class RegisterBusiness
                 'status' => 'ACTIVE',
             ]);
 
-            // $user->outlets()->attach($outlet->id, ['business_id' => $business->id]);
+            $user->outlets()->attach($outlet->id, ['business_id' => $business->id]);
 
             $this->seedRoles->run($business);
             $this->registrar->setPermissionsTeamId($business->id);
