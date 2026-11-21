@@ -57,7 +57,9 @@ final class AuditLogger
     }
 
     /**
-     * @param  Model|array{0: string, 1: int|null}  $resource
+     * Validasi runtime dipertahankan: pemanggil boleh datang dari kode tanpa analisis statis.
+     *
+     * @param  Model|array<int, mixed>  $resource
      * @return array{0: string, 1: int|null}
      */
     private static function resource(Model|array $resource): array
