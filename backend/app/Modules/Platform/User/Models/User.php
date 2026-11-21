@@ -10,8 +10,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @property int $failed_login_count
+ * @property Carbon|null $locked_until
+ * @property Carbon|null $last_login_at
+ */
 class User extends Authenticatable
 {
     use BelongsToBusiness;
