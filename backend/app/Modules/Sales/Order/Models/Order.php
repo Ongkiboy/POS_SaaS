@@ -6,6 +6,8 @@ use App\Modules\Platform\Outlet\Models\Outlet;
 use App\Modules\Platform\Tenant\Concerns\BelongsToBusiness;
 use App\Modules\Platform\Tenant\Concerns\HasOutletScope;
 use App\Modules\Platform\User\Models\User;
+use App\Modules\Sales\Payment\Models\Payment;
+use App\Modules\Sales\Refund\Models\Refund;
 use App\Modules\Shift\Models\Shift;
 use App\Support\Enums\DiscountType;
 use App\Support\Enums\KitchenStatus;
@@ -16,6 +18,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * Order kasir (ERD §3.4). Uang = int rupiah; tarif = string 2 desimal.
@@ -94,6 +97,22 @@ class Order extends Model
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    /**
+     * @return HasOne<Payment, $this>
+     */
+    public function payment(): HasOne
+    {
+        return $this->hasOne(Payment::class);
+    }
+
+    /**
+     * @return HasOne<Refund, $this>
+     */
+    public function refund(): HasOne
+    {
+        return $this->hasOne(Refund::class);
     }
 
     protected static function newFactory(): OrderFactory

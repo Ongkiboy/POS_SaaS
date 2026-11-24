@@ -6,6 +6,8 @@ use App\Support\Enums\MovementType;
 use App\Support\Enums\OrderStatus;
 use App\Support\Enums\OrderType;
 use App\Support\Enums\PaymentMethod;
+use App\Support\Enums\PaymentProvider;
+use App\Support\Enums\PaymentStatus;
 use App\Support\Enums\ShiftStatus;
 use Illuminate\Support\Facades\DB;
 
@@ -49,4 +51,6 @@ it('nilai enum sama dengan CHECK di database (AC2)', function (string $constrain
     'OrderType' => ['orders_order_type_check', OrderType::class],
     'KitchenStatus' => ['orders_kitchen_status_check', KitchenStatus::class],
     'DiscountType' => ['orders_discount_type_check', DiscountType::class],
+    'PaymentStatus' => ['payments_status_check', PaymentStatus::class],
+    'PaymentProvider' => ['payments_provider_check', PaymentProvider::class],
 ]);
