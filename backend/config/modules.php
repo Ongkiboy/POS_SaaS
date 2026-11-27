@@ -1,5 +1,6 @@
 <?php
 
+use App\Modules\Inventory\Ingredient\IngredientModule;
 use App\Modules\Platform\Auth\AuthModule;
 use App\Modules\Platform\Rbac\RbacModule;
 use App\Modules\Platform\Tenant\TenantModule;
@@ -13,5 +14,6 @@ return [
         TenantModule::class,
         RbacModule::class,
         AuthModule::class,
+        IngredientModule::class,
     ],
 ];
