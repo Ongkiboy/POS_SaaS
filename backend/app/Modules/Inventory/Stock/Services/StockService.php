@@ -167,6 +167,58 @@ class StockService
     }
 
     /**
+     * Buat pergerakan pembalik (reversal) dengan delta berlawanan dan referensi baru (AC2, BR-009).
+     *
+     * @param  StockMovement  $movement  Movement yang akan dibalik
+     * @param  string|null  $newReferenceType  Tipe referensi baru (misal REFUND)
+     * @param  int|null  $newReferenceId  ID referensi baru
+     * @param  int|null  $userId  User yang melakukan pembalikan
+     * @param  string|null  $note  Catatan pembalikan
+     * @param  string|null  $reverseType  Tipe movement pembalik (default: SALE -> RETURN, RETURN -> SALE, dst.)
+     * @param  bool  $forceNegative  Override stok minus
+     */
+    public function reverse(
+        StockMovement $movement,
+        ?string $newReferenceType = null,
+        ?int $newReferenceId = null,
+        ?int $userId = null,
+        ?string $note = null,
+        ?string $reverseType = null,
+        bool $forceNegative = false,
+    ): StockMovement {
+        // Delta berlawanan arah (-delta).
+        $reverseDelta = bcmul($this->formatQuantity($movement->quantity_delta), '-1', 4);
+
+        $type = $reverseType ?? match ($movement->type) {
+            'SALE' => 'RETURN',
+            'RETURN' => 'SALE',
+            default => 'ADJUSTMENT',
+        };
+
+        $refType = $newReferenceType ?? match ($movement->reference_type) {
+            'ORDER' => 'REFUND',
+            default => 'REVERSAL',
+        };
+
+        $refId = $newReferenceId ?? $movement->id;
+
+        $reverseNote = $note ?? "Pembalikan movement #{$movement->id} ({$movement->type})";
+
+        return $this->apply(
+            type: $type,
+            outletId: (int) $movement->outlet_id,
+            ingredientId: (int) $movement->ingredient_id,
+            quantityDelta: $reverseDelta,
+            referenceType: $refType,
+            referenceId: $refId,
+            unitCost: $movement->unit_cost,
+            userId: $userId ?? $movement->user_id,
+            note: $reverseNote,
+            forceNegative: $forceNegative,
+        );
+    }
+
+    /**
      * Ambil kuantitas saldo stok saat ini dalam format 4 desimal string.
      */
     public function getBalance(int $outletId, int $ingredientId): string
